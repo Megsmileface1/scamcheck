@@ -2,8 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>SpamCheck</title>
-  <script src="https://unpkg.com"></script>
+  <title>ScamCheck</title>
   <style>
     body { background-color: #f1f5f9; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 90vh; margin: 0; }
     main { background-color: white; border: 2px solid #e2e8f0; border-radius: 24px; width: 320px; padding: 30px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -20,7 +19,7 @@
 </head>
 <body>
   <main>
-    <div class="badge">🛡️ SpamCheck</div>
+    <div class="badge">🛡️ ScamCheck</div>
     <h1>Is it a Scam?</h1>
     <p>Talk to a real human expert right now.</p>
     
@@ -39,30 +38,39 @@
   </main>
 
   <script>
-    async function connectToDatabase() {
+    function connectToDatabase() {
       var phone = document.getElementById('userPhone').value;
       var clientKey = document.getElementById('supabaseKey').value;
       
       if(clientKey === "") { alert("Please paste your key into the red box first!"); return; }
       if(phone === "") { alert("Please type a phone number!"); return; }
 
-      try {
-        const supabaseUrl = 'https://supabase.co';
-        const supabase = window.supabase.createClient(supabaseUrl, clientKey);
+      // Native connection that requires ZERO script libraries or downloads
+      var url = 'https://supabase.co';
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("apikey", clientKey);
+      xhr.setRequestHeader("Authorization", "Bearer " + clientKey);
 
-        const { error } = await supabase
-          .from('users')
-          .insert([{ phone_number: phone, call_credits: 1, account_status: 'active' }]);
-
-        if (error) { 
-          // FIXED: This will now show the exact error text, code, and message details
-          alert("Database Error Details:\n" + JSON.stringify(error, null, 2)); 
-        } else { 
-          alert("SUCCESS! Connected to your database. Phone number " + phone + " is saved!"); 
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 201 || xhr.status === 200) {
+            alert("SUCCESS! Connected to your database. Phone number " + phone + " is saved!");
+          } else {
+            alert("Database Error Code " + xhr.status + ": " + xhr.responseText);
+          }
         }
-      } catch (err) { 
-        alert("System Error: " + err.message); 
-      }
+      };
+
+      var data = JSON.stringify({
+        "phone_number": phone,
+        "call_credits": 1,
+        "account_status": "active"
+      });
+
+      xhr.send(data);
     }
   </script>
 </body>
