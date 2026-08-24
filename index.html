@@ -1,77 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ScamCheck</title>
-  <style>
-    body { background-color: #f1f5f9; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 90vh; margin: 0; }
-    main { background-color: white; border: 2px solid #e2e8f0; border-radius: 24px; width: 320px; padding: 30px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-    .badge { background-color: #dbeafe; color: #1e40af; display: inline-block; font-weight: bold; padding: 8px 16px; border-radius: 20px; font-size: 16px; margin-bottom: 10px; }
-    h1 { font-size: 28px; margin: 10px 0; color: #0f172a; }
-    p { font-size: 15px; color: #475569; margin: 0 0 20px 0; }
-    .login-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 15px; margin-bottom: 20px; text-align: left; }
-    .label { font-size: 13px; font-weight: bold; color: #475569; text-transform: uppercase; display: block; margin-bottom: 5px; }
-    .input-field { width: 92%; padding: 10px; font-size: 14px; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 10px; outline: none; }
-    .submit-btn { width: 100%; background-color: #2563eb; color: white; border: none; padding: 10px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-    .call-btn { background-color: #059669; color: white; border: 8px solid #d1fae5; border-radius: 50%; width: 160px; height: 160px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    .secured-badge { font-size: 12px; color: #16a34a; font-weight: bold; text-align: center; margin-bottom: 15px; display: block; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScamCheck</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 40px 20px;
+    background: #f1f5f9;
+    font-family: Arial, sans-serif;
+    color: #0f172a;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+textarea {
+    width: 100%;
+    min-height: 200px;
+    box-sizing: border-box;
+    padding: 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+#result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+.warning {
+    color: #b91c1c;
+}
+
+.safe {
+    color: #166534;
+}
+</style>
 </head>
+
 <body>
-  <main>
-    <div class="badge">🛡️ ScamCheck</div>
-    <h1>Is it a Scam?</h1>
-    <p>Talk to a real human expert right now.</p>
-    
-    <!-- Red box is gone! Key is safely tucked away in the engine now -->
-    <span class="secured-badge">🔒 Supabase Database Linked Successfully</span>
 
-    <div class="login-box">
-      <label class="label">Enter Customer Phone:</label>
-      <input type="tel" class="input-field" placeholder="(555) 555-5555" id="userPhone">
-      <button class="submit-btn" onclick="connectToDatabase()">Pay $10.00 & Sign Up</button>
-    </div>
-    
-    <button class="call-btn" onclick="alert('Calling Twilio support line...')">📞 CALL NOW</button>
-  </main>
+<div class="container">
 
-  <script>
-    async function connectToDatabase() {
-      var phone = document.getElementById('userPhone').value;
-      
-      if(phone === "") { alert("Please type a phone number!"); return; }
+<h1>ScamCheck</h1>
 
-      var url = 'https://supabase.co';
-      
-      // Your key is completely baked in right here
-      var clientKey = 'sb_publishable_iVl_P8Vmth44qK9syG1sjA_BrV04dc-';
+<div class="subtitle">
+Check a suspicious email or text message for common scam warning signs.
+</div>
 
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': clientKey,
-            'Authorization': 'Bearer ' + clientKey,
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify({
-            "phone_number": phone,
-            "call_credits": 1,
-            "account_status": "active"
-          })
-        });
+<div class="card">
 
-        if (response.ok) {
-          alert("SUCCESS! Connected to your database. Phone number " + phone + " is saved!");
-        } else {
-          const errorText = await response.text();
-          alert("Database Error Status " + response.status + ": " + errorText);
-        }
-      } catch (err) {
-        alert("Network Connection Error: " + err.message);
-      }
+<h2>Paste your message below</h2>
+
+<textarea id="message" placeholder="Paste the suspicious email or text message here..."></textarea>
+
+<button onclick="checkMessage()">Check This Message</button>
+
+<div id="result">
+Your results will appear here.
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function checkMessage() {
+
+    const message = document.getElementById("message").value.trim();
+    const result = document.getElementById("result");
+
+    if (!message) {
+        result.innerHTML = "Please paste a message first.";
+        return;
     }
-  </script>
+
+    const warningWords = [
+        "urgent",
+        "verify your account",
+        "click here",
+        "gift card",
+        "send money",
+        "wire transfer",
+        "password",
+        "social security",
+        "bank account",
+        "bitcoin",
+        "crypto",
+        "payment",
+        "verification code",
+        "security code"
+    ];
+
+    const lowerMessage = message.toLowerCase();
+
+    const warnings = warningWords.filter(function(word) {
+        return lowerMessage.includes(word);
+    });
+
+    if (warnings.length > 0) {
+
+        result.innerHTML =
+        '<div class="warning">' +
+        '<strong>⚠️ Potential warning signs detected</strong>' +
+        '<br><br>' +
+        'This message contains terms commonly associated with scams:' +
+        '<br><br>' +
+        warnings.map(function(word) {
+            return "• " + word;
+        }).join("<br>") +
+        '<br><br>' +
+        '<strong>Be careful.</strong> Do not send money, passwords, verification codes, or personal information until you verify who contacted you.' +
+        '</div>';
+
+    } else {
+
+        result.innerHTML =
+        '<div class="safe">' +
+        '<strong>No obvious scam warning words were detected.</strong>' +
+        '<br><br>' +
+        'That does not guarantee the message is safe. Always be cautious with unexpected requests for money or personal information.' +
+        '</div>';
+
+    }
+}
+
+</script>
+
 </body>
 </html>
