@@ -388,10 +388,18 @@
 function startCall(event) {
     event.preventDefault();
 
+    const phone = prompt(
+        "Enter your phone number so ScamCheck can call you:"
+    );
+
+    if (!phone) {
+        return;
+    }
+
     alert(
-        "ScamCheck calling will be connected here.\n\n" +
-        "Next we will connect this button to Square for the $10 payment " +
-        "and Twilio for the phone call."
+        "Thanks. Your phone number is:\n\n" +
+        phone +
+        "\n\nNext we will connect this to Square for the $10 payment and Twilio for the actual call."
     );
 }
 
