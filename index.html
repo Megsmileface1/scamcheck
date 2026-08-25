@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>ScamCheck — Talk to a Real Person</title>
-
+<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
 <style>
     * {
         box-sizing: border-box;
@@ -286,7 +286,34 @@
         </div>
 
     </section>
+<section id="payment-section" class="send-box" style="display:none;">
+    <h3>Complete your $10 ScamCheck consultation payment</h3>
 
+    <p>
+        Enter your card information below. This is a Square Sandbox test payment.
+    </p>
+
+    <div id="card-container"></div>
+
+    <button id="pay-button"
+        style="
+            width:100%;
+            max-width:500px;
+            padding:16px;
+            border:none;
+            border-radius:12px;
+            background:#1976a8;
+            color:white;
+            font-size:18px;
+            font-weight:700;
+            cursor:pointer;
+            margin-top:15px;
+        ">
+        Pay $10 and Continue
+    </button>
+
+    <div id="payment-status" style="margin-top:15px;"></div>
+</section>
     <section class="how">
 
         <h3>Our simple approach</h3>
@@ -385,7 +412,70 @@
 
 <script>
 
-function startCall(event) {
+let squarePayments;
+let squareCard;
+let customerPhone = "";
+
+async function initializeSquare() {
+    if (squareCard) return;
+
+    squarePayments = Square.payments(
+        "sandbox-sq0idb-g-hF8WJa65Oi_kjo-DfYKA",
+        "LGQJB2J51P6FH"
+    );
+
+    squareCard = await squarePayments.card();
+    await squareCard.attach("#card-container");
+
+    document.getElementById("pay-button").onclick = async function () {
+
+        const status = document.getElementById("payment-status");
+        const button = document.getElementById("pay-button");
+
+        button.disabled = true;
+        button.textContent = "Processing...";
+        status.textContent = "";
+
+        try {
+            const tokenResult = await squareCard.tokenize();
+
+            if (tokenResult.status !== "OK") {
+                throw new Error("Card information could not be verified.");
+            }
+
+            const response = await fetch("/api/create-payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    sourceId: tokenResult.token,
+                    phone: customerPhone
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error("Payment could not be completed.");
+            }
+
+            status.innerHTML =
+                "<strong>✓ Test payment successful.</strong><br>" +
+                "Next, ScamCheck will connect this payment to the phone call.";
+
+            button.textContent = "Payment Successful";
+
+        } catch (error) {
+            status.textContent = error.message;
+            button.disabled = false;
+            button.textContent = "Pay $10 and Continue";
+        }
+    };
+}
+
+
+async function startCall(event) {
     event.preventDefault();
 
     const phone = prompt(
@@ -396,11 +486,23 @@ function startCall(event) {
         return;
     }
 
-    alert(
-        "Thanks. Your phone number is:\n\n" +
-        phone +
-        "\n\nNext we will connect this to Square for the $10 payment and Twilio for the actual call."
-    );
+    customerPhone = phone;
+
+    const paymentSection =
+        document.getElementById("payment-section");
+
+    paymentSection.style.display = "block";
+
+    paymentSection.scrollIntoView({
+        behavior: "smooth"
+    });
+
+    try {
+        await initializeSquare();
+    } catch (error) {
+        document.getElementById("payment-status").textContent =
+            "The payment form could not be loaded. Please try again.";
+    }
 }
 
 function sendSomething(event) {
