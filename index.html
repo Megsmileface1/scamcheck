@@ -3,173 +3,405 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScamCheck</title>
+
+<title>ScamCheck — Talk to a Real Person</title>
 
 <style>
-body {
-    margin: 0;
-    padding: 40px 20px;
-    background: #f1f5f9;
-    font-family: Arial, sans-serif;
-    color: #0f172a;
-}
+    * {
+        box-sizing: border-box;
+    }
 
-.container {
-    max-width: 800px;
-    margin: auto;
-}
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        background: #f4f8fc;
+        color: #16324f;
+    }
 
-h1 {
-    text-align: center;
-    font-size: 42px;
-    margin-bottom: 10px;
-}
+    .topbar {
+        background: #12395b;
+        color: white;
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 14px;
+        letter-spacing: .3px;
+    }
 
-.subtitle {
-    text-align: center;
-    color: #64748b;
-    margin-bottom: 30px;
-}
+    .container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px 18px 50px;
+    }
 
-.card {
-    background: white;
-    padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
+    .logo {
+        text-align: center;
+        margin-top: 12px;
+    }
 
-textarea {
-    width: 100%;
-    min-height: 200px;
-    box-sizing: border-box;
-    padding: 15px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-}
+    .logo h1 {
+        margin: 0;
+        font-size: 42px;
+        letter-spacing: 1px;
+        color: #12395b;
+    }
 
-button {
-    width: 100%;
-    margin-top: 15px;
-    padding: 15px;
-    border: none;
-    border-radius: 8px;
-    background: #2563eb;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-}
+    .tagline {
+        margin-top: 8px;
+        color: #4d718f;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        font-size: 14px;
+    }
 
-button:hover {
-    background: #1d4ed8;
-}
+    .hero {
+        background: white;
+        border-radius: 20px;
+        margin-top: 28px;
+        padding: 32px 22px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(18,57,91,.08);
+    }
 
-#result {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 8px;
-    line-height: 1.6;
-}
+    .hero h2 {
+        font-size: 30px;
+        line-height: 1.2;
+        margin: 0 0 12px;
+        color: #16324f;
+    }
 
-.warning {
-    color: #b91c1c;
-}
+    .hero p {
+        max-width: 650px;
+        margin: 0 auto 24px;
+        font-size: 17px;
+        line-height: 1.6;
+        color: #5b7185;
+    }
 
-.safe {
-    color: #166534;
-}
+    .call-button {
+        display: block;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px 20px;
+        border-radius: 14px;
+        background: #1976a8;
+        color: white;
+        text-decoration: none;
+        font-size: 22px;
+        font-weight: 700;
+        box-shadow: 0 6px 16px rgba(25,118,168,.25);
+        transition: transform .15s ease, background .15s ease;
+    }
+
+    .call-button:hover {
+        background: #145f87;
+        transform: translateY(-1px);
+    }
+
+    .price {
+        display: block;
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 5px;
+        opacity: .95;
+    }
+
+    .reassurance {
+        margin-top: 18px;
+        color: #557084;
+        font-size: 14px;
+    }
+
+    .how {
+        margin-top: 28px;
+        background: #eaf4fb;
+        border-radius: 18px;
+        padding: 24px 20px;
+    }
+
+    .how h3 {
+        text-align: center;
+        margin: 0 0 20px;
+        color: #16324f;
+        font-size: 21px;
+    }
+
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .step {
+        background: white;
+        border-radius: 12px;
+        padding: 16px 10px;
+        text-align: center;
+    }
+
+    .step strong {
+        display: block;
+        color: #1976a8;
+        font-size: 18px;
+        margin-bottom: 6px;
+    }
+
+    .step span {
+        color: #627789;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .situations {
+        margin-top: 30px;
+    }
+
+    .situations h3 {
+        text-align: center;
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+
+    .situations p {
+        text-align: center;
+        color: #687d8e;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .option {
+        background: white;
+        border: 1px solid #d9e5ee;
+        border-radius: 14px;
+        padding: 18px;
+        text-align: left;
+        color: #23445e;
+        font-size: 16px;
+    }
+
+    .option-icon {
+        font-size: 23px;
+        margin-right: 8px;
+    }
+
+    .send-box {
+        margin-top: 30px;
+        background: white;
+        border-radius: 18px;
+        padding: 25px 20px;
+        text-align: center;
+        border: 1px solid #dce8f0;
+    }
+
+    .send-box h3 {
+        margin-top: 0;
+        font-size: 21px;
+    }
+
+    .send-box p {
+        color: #657b8d;
+        line-height: 1.5;
+    }
+
+    .secondary-button {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 13px 22px;
+        border-radius: 10px;
+        border: 1px solid #1976a8;
+        color: #1976a8;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 35px;
+        color: #8093a3;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 650px) {
+        .logo h1 {
+            font-size: 36px;
+        }
+
+        .hero {
+            padding: 28px 18px;
+        }
+
+        .hero h2 {
+            font-size: 26px;
+        }
+
+        .steps {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .options {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 </head>
 
 <body>
 
+<div class="topbar">
+    When something doesn't feel right, stop and talk to someone.
+</div>
+
 <div class="container">
 
-<h1>ScamCheck</h1>
+    <div class="logo">
+        <h1>SCAMCHECK</h1>
+        <div class="tagline">STOP • CALL • ASK • MOVE</div>
+    </div>
 
-<div class="subtitle">
-Check a suspicious email or text message for common scam warning signs.
-</div>
+    <section class="hero">
 
-<div class="card">
+        <h2>Think you're being scammed?</h2>
 
-<h2>Paste your message below</h2>
+        <p>
+            Don't make a decision while you're confused or under pressure.
+            Talk to a real person who can listen to what happened and help
+            you decide what to do next.
+        </p>
 
-<textarea id="message" placeholder="Paste the suspicious email or text message here..."></textarea>
+        <a href="#" class="call-button" onclick="startCall(event)">
+            📞 CALL SCAMCHECK
+            <span class="price">$10 per consultation</span>
+        </a>
 
-<button onclick="checkMessage()">Check This Message</button>
+        <div class="reassurance">
+            Explain the phone call, email, text, or situation that concerns you.
+        </div>
 
-<div id="result">
-Your results will appear here.
-</div>
+    </section>
 
-</div>
+    <section class="how">
+
+        <h3>Our simple approach</h3>
+
+        <div class="steps">
+
+            <div class="step">
+                <strong>STOP</strong>
+                <span>Don't act while you're under pressure.</span>
+            </div>
+
+            <div class="step">
+                <strong>CALL</strong>
+                <span>Talk to a real ScamCheck person.</span>
+            </div>
+
+            <div class="step">
+                <strong>ASK</strong>
+                <span>Explain what happened and ask questions.</span>
+            </div>
+
+            <div class="step">
+                <strong>MOVE</strong>
+                <span>Take the safest next step.</span>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="situations">
+
+        <h3>What happened?</h3>
+
+        <p>You can talk to us about any situation that concerns you.</p>
+
+        <div class="options">
+
+            <div class="option">
+                <span class="option-icon">📞</span>
+                I received a suspicious phone call
+            </div>
+
+            <div class="option">
+                <span class="option-icon">💬</span>
+                I received a suspicious text
+            </div>
+
+            <div class="option">
+                <span class="option-icon">📧</span>
+                I received a suspicious email
+            </div>
+
+            <div class="option">
+                <span class="option-icon">💰</span>
+                Someone is asking me for money
+            </div>
+
+            <div class="option">
+                <span class="option-icon">🔐</span>
+                Someone wants my personal information
+            </div>
+
+            <div class="option">
+                <span class="option-icon">🚨</span>
+                I think I've already been scammed
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="send-box">
+
+        <h3>Have something you want to show us?</h3>
+
+        <p>
+            During your consultation, you can tell us what the person said,
+            read us the message, or provide a screenshot or copy of what you received.
+        </p>
+
+        <a href="#" class="secondary-button" onclick="sendSomething(event)">
+            Send Supporting Information
+        </a>
+
+    </section>
+
+    <div class="footer">
+        ScamCheck is designed to help people slow down, ask questions,
+        and make safer decisions when something doesn't feel right.
+        <br><br>
+        © 2026 ScamCheck
+    </div>
 
 </div>
 
 <script>
 
-function checkMessage() {
+function startCall(event) {
+    event.preventDefault();
 
-    const message = document.getElementById("message").value.trim();
-    const result = document.getElementById("result");
+    alert(
+        "ScamCheck calling will be connected here.\n\n" +
+        "Next we will connect this button to Square for the $10 payment " +
+        "and Twilio for the phone call."
+    );
+}
 
-    if (!message) {
-        result.innerHTML = "Please paste a message first.";
-        return;
-    }
+function sendSomething(event) {
+    event.preventDefault();
 
-    const warningWords = [
-        "urgent",
-        "verify your account",
-        "click here",
-        "gift card",
-        "send money",
-        "wire transfer",
-        "password",
-        "social security",
-        "bank account",
-        "bitcoin",
-        "crypto",
-        "payment",
-        "verification code",
-        "security code"
-    ];
-
-    const lowerMessage = message.toLowerCase();
-
-    const warnings = warningWords.filter(function(word) {
-        return lowerMessage.includes(word);
-    });
-
-    if (warnings.length > 0) {
-
-        result.innerHTML =
-        '<div class="warning">' +
-        '<strong>⚠️ Potential warning signs detected</strong>' +
-        '<br><br>' +
-        'This message contains terms commonly associated with scams:' +
-        '<br><br>' +
-        warnings.map(function(word) {
-            return "• " + word;
-        }).join("<br>") +
-        '<br><br>' +
-        '<strong>Be careful.</strong> Do not send money, passwords, verification codes, or personal information until you verify who contacted you.' +
-        '</div>';
-
-    } else {
-
-        result.innerHTML =
-        '<div class="safe">' +
-        '<strong>No obvious scam warning words were detected.</strong>' +
-        '<br><br>' +
-        'That does not guarantee the message is safe. Always be cautious with unexpected requests for money or personal information.' +
-        '</div>';
-
-    }
+    alert(
+        "This area will allow customers to provide supporting information " +
+        "during their ScamCheck consultation."
+    );
 }
 
 </script>
