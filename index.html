@@ -499,7 +499,25 @@ if (!saveCardConsent.checked) {
             if (!response.ok || !result.success) {
                 throw new Error("Payment could not be completed.");
             }
+if (result.squareCustomerId && result.squareCardId) {
+  const saveResponse = await fetch("/api/save-user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      phone: customerPhone,
+      squareCustomerId: result.squareCustomerId,
+      squareCardId: result.squareCardId
+    })
+  });
 
+  const saveResult = await saveResponse.json();
+
+  if (!saveResponse.ok || !saveResult.success) {
+    throw new Error("Payment worked, but the saved card information could not be stored.");
+  }
+}
             status.innerHTML =
     "<strong>✓ Test payment successful.</strong><br>" +
     "Connecting your ScamCheck call now...";
