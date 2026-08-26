@@ -20,7 +20,22 @@
 
     .topbar {
         background: #12395b;
-        color: white;
+        color: white;2026-08-26 15:28:30.285 [error] Square customer error: {
+  errors: [
+    {
+      code: 'INVALID_PHONE_NUMBER',
+      detail: 'Expected phone_number to be a valid phone number',
+      field: 'phone_number',
+      category: 'INVALID_REQUEST_ERROR'
+    }
+  ]
+}
+2026-08-26 15:28:30.288 [error] Payment error: Error: Could not create Square customer
+    at handler (/var/task/api/create-payment.js:88:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async r (/opt/rust/nodejs.js:2:16316)
+    at async Server.<anonymous> (/opt/rust/nodejs.js:2:12267)
+    at async Server.<anonymous> (/opt/rust/nodejs.js:17:14507)
         text-align: center;
         padding: 10px 15px;
         font-size: 14px;
