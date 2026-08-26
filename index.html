@@ -314,6 +314,36 @@
 
     <div id="payment-status" style="margin-top:15px;"></div>
 </section>
+   <section id="calling-section" class="send-box" style="display:none;">
+
+    <div style="font-size:50px; margin-bottom:10px;">
+        📞
+    </div>
+
+    <h2 style="margin-bottom:10px;">
+        Calling ScamCheck...
+    </h2>
+
+    <p style="font-size:17px;">
+        Please answer your phone.
+        We'll connect you with a ScamCheck advisor.
+    </p>
+
+    <div id="call-timer"
+         style="
+            font-size:34px;
+            font-weight:700;
+            color:#1976a8;
+            margin-top:20px;
+         ">
+        00:00
+    </div>
+
+    <p style="font-size:14px; margin-top:15px;">
+        Stay on the line while we connect your call.
+    </p>
+
+</section>
     <section class="how">
 
         <h3>Our simple approach</h3>
@@ -481,7 +511,25 @@ const callResult = await callResponse.json();
 if (!callResponse.ok || !callResult.success) {
     throw new Error("Payment worked, but the call could not be started.");
 }
+document.getElementById("payment-section").style.display = "none";
 
+const callingSection = document.getElementById("calling-section");
+callingSection.style.display = "block";
+callingSection.scrollIntoView({ behavior: "smooth" });
+let callSeconds = 0;
+const callTimer = document.getElementById("call-timer");
+
+setInterval(function () {
+    callSeconds++;
+
+    const minutes = Math.floor(callSeconds / 60);
+    const seconds = callSeconds % 60;
+
+    callTimer.textContent =
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0");
+}, 1000);
 status.innerHTML =
     "<strong>✓ Payment successful.</strong><br>" +
     "ScamCheck is calling you now.";
