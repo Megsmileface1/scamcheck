@@ -295,7 +295,10 @@
 
     <div id="card-container"></div>
 
-    <button id="pay-button"
+    <label style="display:block; margin:15px 0; font-size:15px; line-height:1.4;">
+  <input type="checkbox" id="save-card-consent" required>
+  Save my card securely with Square for future ScamCheck calls.
+</label><button id="pay-button"
         style="
             width:100%;
             max-width:500px;
@@ -461,7 +464,14 @@ async function initializeSquare() {
 
         const status = document.getElementById("payment-status");
         const button = document.getElementById("pay-button");
+const saveCardConsent =
+    document.getElementById("save-card-consent");
 
+if (!saveCardConsent.checked) {
+    status.textContent =
+        "Please agree to save your card securely for future ScamCheck calls.";
+    return;
+}
         button.disabled = true;
         button.textContent = "Processing...";
         status.textContent = "";
