@@ -654,9 +654,14 @@ if (
   const callResult = await callResponse.json();
 
   if (!callResponse.ok || !callResult.success) {
-    alert("Payment succeeded, but the call could not be started.");
-    return;
-  }
+  const twilioMessage =
+    callResult.details?.message ||
+    callResult.error ||
+    "The call could not be started.";
+
+  alert("Twilio says: " + twilioMessage);
+  return;
+}
 
   return;
 
