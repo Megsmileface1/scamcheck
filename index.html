@@ -461,10 +461,30 @@ async function initializeSquare() {
             }
 
             status.innerHTML =
-                "<strong>✓ Test payment successful.</strong><br>" +
-                "Next, ScamCheck will connect this payment to the phone call.";
+    "<strong>✓ Test payment successful.</strong><br>" +
+    "Connecting your ScamCheck call now...";
 
-            button.textContent = "Payment Successful";
+button.textContent = "Payment Successful";
+
+const callResponse = await fetch("/api/start-call", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        customerPhone: customerPhone
+    })
+});
+
+const callResult = await callResponse.json();
+
+if (!callResponse.ok || !callResult.success) {
+    throw new Error("Payment worked, but the call could not be started.");
+}
+
+status.innerHTML =
+    "<strong>✓ Payment successful.</strong><br>" +
+    "ScamCheck is calling you now.";
 
         } catch (error) {
             status.textContent = error.message;
