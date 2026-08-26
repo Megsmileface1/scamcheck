@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
   try {
 
-    const { sourceId } = req.body;
+    const { sourceId, phone } = req.body;
 
     if (!sourceId) {
       return res.status(400).json({
@@ -59,11 +59,73 @@ export default async function handler(req, res) {
         details: data
       });
     }
+let squareCustomerId = null;
+let squareCardId = null;
 
-    return res.status(200).json({
-      success: true,
-      payment: data.payment
-    });
+if (phone) {
+  const customerResponse = await fetch(
+    "https://connect.squareupsandbox.com/v2/customers",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Square-Version": "2026-08-19",
+        "Authorization": `Bearer ${process.env.SQUARE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify({
+        idempotency_key:
+          "cust-" + Date.now() + "-" +
+          Math.random().toString(36).substring(2),
+        phone_number: phone
+      })
+    }
+  );
+
+  const customerData = await customerResponse.json();
+
+  if (!customerResponse.ok) {
+    console.error("Square customer error:", customerData);
+    throw new Error("Could not create Square customer");
+  }
+
+  squareCustomerId = customerData.customer.id;
+
+  const cardResponse = await fetch(
+    "https://connect.squareupsandbox.com/v2/cards",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Square-Version": "2026-08-19",
+        "Authorization": `Bearer ${process.env.SQUARE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify({
+        idempotency_key:
+          "card-" + Date.now() + "-" +
+          Math.random().toString(36).substring(2),
+        source_id: data.payment.id,
+        card: {
+          customer_id: squareCustomerId
+        }
+      })
+    }
+  );
+
+  const cardData = await cardResponse.json();
+
+  if (!cardResponse.ok) {
+    console.error("Square card error:", cardData);
+    throw new Error("Payment succeeded, but card could not be saved");
+  }
+
+  squareCardId = cardData.card.id;
+}
+   return res.status(200).json({
+  success: true,
+  payment: data.payment,
+  squareCustomerId: squareCustomerId,
+  squareCardId: squareCardId
+});
 
   } catch (error) {
 
