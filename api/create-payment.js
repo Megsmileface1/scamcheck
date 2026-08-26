@@ -9,7 +9,17 @@ export default async function handler(req, res) {
   try {
 
     const { sourceId, phone } = req.body;
+let squarePhone = phone;
 
+if (phone && !phone.startsWith("+")) {
+  const digits = phone.replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    squarePhone = "+1" + digits;
+  } else if (digits.length === 11 && digits.startsWith("1")) {
+    squarePhone = "+" + digits;
+  }
+}
     if (!sourceId) {
       return res.status(400).json({
         error: "Missing payment source"
@@ -76,7 +86,7 @@ if (phone) {
         idempotency_key:
           "cust-" + Date.now() + "-" +
           Math.random().toString(36).substring(2),
-        phone_number: phone
+       phone_number: squarePhone
       })
     }
   );
