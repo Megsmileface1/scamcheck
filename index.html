@@ -11,7 +11,7 @@
         box-sizing: border-box;
     }
 
-    body {
+    body {https://scamcheck-lac.vercel.app/api/charge-saved-car
         margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
         background: #f4f8fc;
@@ -605,7 +605,50 @@ if (
     lookupResult.user.square_customer_id &&
     lookupResult.user.square_card_id
 ) {
-    alert("Welcome back! ScamCheck found your saved card.");
+   try {
+  const chargeResponse = await fetch("/api/charge-saved-card", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      squareCustomerId: lookupResult.user.square_customer_id,
+      squareCardId: lookupResult.user.square_card_id
+    })
+  });
+
+  const chargeResult = await chargeResponse.json();
+
+  if (!chargeResponse.ok || !chargeResult.success) {
+    alert("Your saved card could not be charged. Please try again.");
+    return;
+  }
+
+  alert("Payment successful. Connecting your ScamCheck call now...");
+
+  const callResponse = await fetch("/api/start-call", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      phone: customerPhone
+    })
+  });
+
+  const callResult = await callResponse.json();
+
+  if (!callResponse.ok || !callResult.success) {
+    alert("Payment succeeded, but the call could not be started.");
+    return;
+  }
+
+  return;
+
+} catch (error) {
+  console.error("Returning customer error:", error);
+  alert("Something went wrong. Please try again.");
+  return;
 }
     const paymentSection =
         document.getElementById("payment-section");
