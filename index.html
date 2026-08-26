@@ -583,7 +583,30 @@ async function startCall(event) {
     }
 
     customerPhone = phone;
+const lookupResponse = await fetch("/api/find-user", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        phone: phone
+    })
+});
 
+const lookupResult = await lookupResponse.json();
+
+if (!lookupResponse.ok || !lookupResult.success) {
+    alert("ScamCheck could not check your account. Please try again.");
+    return;
+}
+
+if (
+    lookupResult.found &&
+    lookupResult.user.square_customer_id &&
+    lookupResult.user.square_card_id
+) {
+    alert("Welcome back! ScamCheck found your saved card.");
+}
     const paymentSection =
         document.getElementById("payment-section");
 
