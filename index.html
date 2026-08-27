@@ -290,7 +290,35 @@
             Talk to a real person who can listen to what happened and help
             you decide what to do next.
         </p>
+<div style="max-width:500px; margin:0 auto 14px auto; text-align:left;">
+  <label for="customer-phone" style="display:block; margin-bottom:6px; font-weight:700;">
+    Your phone number
+  </label>
 
+  <input
+    type="tel"
+    id="customer-phone"
+    placeholder="(555) 555-5555"
+    autocomplete="tel"
+    inputmode="tel"
+    maxlength="14"
+     oninput="
+  let digits = this.value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length >= 7) {
+    this.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+  } else if (digits.length >= 4) {
+    this.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+  } else if (digits.length > 0) {
+    this.value = '(' + digits;
+  }
+"
+    style="width:100%; box-sizing:border-box; padding:14px 16px; border:1px solid #cbd5e1; border-radius:10px; font-size:18px;"
+  >
+
+  <div style="font-size:14px; margin-top:6px; color:#64748b;">
+    Enter the 10-digit phone number you want ScamCheck to call.
+  </div>
+</div>
         <a href="#" class="call-button" onclick="startCall(event)">
             📞 CALL SCAMCHECK
             <span class="price">$10 per consultation</span>
@@ -627,6 +655,7 @@ status.innerHTML =
 
         } catch (error) {
             status.textContent = error.message;
+           
             button.disabled = false;
             button.textContent = "Pay $10 and Continue";
         }
@@ -639,13 +668,23 @@ async function startCall(event, phoneOverride = "") {
     event.preventDefault();
   }
 
-  const phone = phoneOverride || prompt(
-    "Enter your phone number so ScamCheck can call you:"
-  );
+const phoneInput = document.getElementById("customer-phone");
 
-    if (!phone) {
-        return;
-    }
+const phone =
+  phoneOverride ||
+  (phoneInput ? phoneInput.value.trim() : "");
+
+   if (!phone) {
+  alert("Please enter the phone number you want ScamCheck to call.");
+  return;
+}
+
+const phoneDigits = phone.replace(/\D/g, "");
+
+if (phoneDigits.length !== 10) {
+  alert("Please enter a complete 10-digit U.S. phone number.");
+  return;
+}
 
     customerPhone = phone;
 const lookupResponse = await fetch("/api/find-user", {
