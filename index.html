@@ -371,6 +371,9 @@
   <p><strong>$10.00 payment completed.</strong></p>
 
   <p>Thank you for using ScamCheck.</p>
+      <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+  Start Another ScamCheck Call
+</button>
 </section>
     <section class="how">
 
@@ -776,8 +779,21 @@ return;
             "The payment form could not be loaded. Please try again.";
     }
 }
+}
+  function startAnotherCall() { 
+   const receiptSection = document.getElementById("receipt-section");
+  const paymentSection = document.getElementById("payment-section");
 
-function sendSomething(event) {
+  receiptSection.style.display = "none";
+  paymentSection.style.display = "block";
+
+  paymentSection.scrollIntoView({
+    behavior: "smooth"
+  });
+}
+
+   
+   function sendSomething(event) {
     event.preventDefault();
 
     alert(
