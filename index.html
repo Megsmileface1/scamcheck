@@ -686,14 +686,14 @@ if (phoneDigits.length !== 10) {
   return;
 }
 
-    customerPhone = phone;
+   customerPhone = phoneDigits;
 const lookupResponse = await fetch("/api/find-user", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
     },
     body: JSON.stringify({
-        phone: phone
+      phone: phoneDigits
     })
 });
 
