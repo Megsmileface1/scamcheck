@@ -583,6 +583,41 @@ setInterval(function () {
         ":" +
         String(seconds).padStart(2, "0");
 }, 1000);
+const callStatusInterval = setInterval(async function () {
+  try {
+    const statusResponse = await fetch("/api/call-status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        callSid: callResult.callSid
+      })
+    });
+
+    const statusResult = await statusResponse.json();
+
+    if (
+      statusResponse.ok &&
+      statusResult.success &&
+      statusResult.status === "completed"
+    ) {
+      clearInterval(callStatusInterval);
+
+      callingSection.style.display = "none";
+
+      const receiptSection =
+        document.getElementById("receipt-section");
+
+      receiptSection.style.display = "block";
+      receiptSection.scrollIntoView({
+        behavior: "smooth"
+      });
+    }
+  } catch (error) {
+    console.error("Call status check error:", error);
+  }
+}, 3000);
 status.innerHTML =
     "<strong>✓ Payment successful.</strong><br>" +
     "ScamCheck is calling you now.";
