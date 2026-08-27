@@ -634,12 +634,14 @@ status.innerHTML =
 }
 
 
-async function startCall(event) {
+async function startCall(event, phoneOverride = "") {
+  if (event) {
     event.preventDefault();
+  }
 
-    const phone = prompt(
-        "Enter your phone number so ScamCheck can call you:"
-    );
+  const phone = phoneOverride || prompt(
+    "Enter your phone number so ScamCheck can call you:"
+  );
 
     if (!phone) {
         return;
@@ -779,16 +781,16 @@ return;
             "The payment form could not be loaded. Please try again.";
     }
 }
-  function startAnotherCall() { 
-   const receiptSection = document.getElementById("receipt-section");
-  const paymentSection = document.getElementById("payment-section");
+ function startAnotherCall() {
+  const receiptSection = document.getElementById("receipt-section");
 
   receiptSection.style.display = "none";
-  paymentSection.style.display = "block";
 
-  paymentSection.scrollIntoView({
-    behavior: "smooth"
-  });
+  if (customerPhone) {
+    startCall(null, customerPhone);
+  } else {
+    startCall(null);
+  }
 }
 
    
