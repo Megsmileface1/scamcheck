@@ -7,5 +7,6 @@ export default async function handler(req, res) {
 
   console.log("Advisor call status:", dialCallStatus);
 
-  return res.status(200).send("OK");
+  res.setHeader("Content-Type", "text/xml");
+return res.status(200).send("<Response><Say>We are sorry. A ScamCheck advisor is not available right now. Please try again shortly.</Say><Hangup/></Response>");
 }
