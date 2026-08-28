@@ -27,7 +27,11 @@ export default async function handler(req, res) {
         <Say>
           Please hold while ScamCheck connects you to an advisor.
         </Say>
-        <Dial callerId="${twilioNumber}">
+      <Dial
+  callerId="${twilioNumber}"
+  action="/api/advisor-status"
+  method="POST"
+>
         <Number timeout="20">${advisorPhone}</Number>
         </Dial>
       </Response>
