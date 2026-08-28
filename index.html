@@ -400,7 +400,7 @@
 
   <p>Thank you for using ScamCheck.</p>
       <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
-  Start Another ScamCheck Call
+ Start Another ScamCheck Call — $10
 </button>
 </section>
     <section class="how">
@@ -821,6 +821,13 @@ return;
     }
 }
  function startAnotherCall() {
+    const confirmed = confirm(
+  "Start another ScamCheck consultation for $10.00? Your saved card will be charged."
+);
+
+if (!confirmed) {
+  return;
+}
   const receiptSection = document.getElementById("receipt-section");
 
   receiptSection.style.display = "none";
