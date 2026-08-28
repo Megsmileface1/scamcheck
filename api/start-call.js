@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   action="/api/advisor-status"
   method="POST"
 >
-        <Number timeout="20">${advisorPhone}</Number>
+       <Number timeout="20" machineDetection="Enable">${advisorPhone}</Number>
         </Dial>
       </Response>
     `;
