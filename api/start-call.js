@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         </Say>
       <Dial
   callerId="${twilioNumber}"
-  action="/api/advisor-status"
+ action="https://scamcheck-lac.vercel.app/api/advisor-status"
   method="POST"
 >
       <Number timeout="20" url="https://scamcheck-lac.vercel.app/api/advisor-screen">${advisorPhone}</Number>
