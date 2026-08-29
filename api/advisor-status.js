@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   const dialCallStatus = req.body.DialCallStatus || "";
-
+const paymentId = req.query.paymentId || "";
   console.log("Advisor call status:", dialCallStatus);
 
   res.setHeader("Content-Type", "text/xml");
