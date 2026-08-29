@@ -585,9 +585,10 @@ const callResponse = await fetch("/api/start-call", {
     headers: {
         "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-        customerPhone: customerPhone
-    })
+  body: JSON.stringify({
+  customerPhone: customerPhone,
+  paymentId: paymentId
+})
 });
 
 const callResult = await callResponse.json();
