@@ -6,8 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { customerPhone } = req.body;
-
+  const { customerPhone, paymentId } = req.body;
     if (!customerPhone) {
       return res.status(400).json({
         error: "Missing customer phone number"
