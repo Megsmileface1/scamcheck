@@ -28,7 +28,7 @@ export default async function handler(req, res) {
         </Say>
       <Dial
   callerId="${twilioNumber}"
- action="https://scamcheck-lac.vercel.app/api/advisor-status"
+action="https://scamcheck-lac.vercel.app/api/advisor-status?paymentId=${encodeURIComponent(paymentId || "")}"
   method="POST"
 >
      <Number timeout="20" url="https://scamcheck-lac.vercel.app/api/advisor-screen?paymentId=${encodeURIComponent(paymentId || "")}">${advisorPhone}</Number>
