@@ -7,7 +7,7 @@ const paymentId = req.query.paymentId || "";
         input="dtmf"
         numDigits="1"
         timeout="5"
-        action="/api/advisor-screen-result"
+        action="https://scamcheck-lac.vercel.app/api/advisor-screen-result?paymentId=${encodeURIComponent(paymentId)}"
         method="POST"
       >
         <Say>
