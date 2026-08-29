@@ -31,7 +31,7 @@ export default async function handler(req, res) {
  action="https://scamcheck-lac.vercel.app/api/advisor-status"
   method="POST"
 >
-      <Number timeout="20" url="https://scamcheck-lac.vercel.app/api/advisor-screen">${advisorPhone}</Number>
+     <Number timeout="20" url="https://scamcheck-lac.vercel.app/api/advisor-screen?paymentId=${encodeURIComponent(paymentId || "")}">${advisorPhone}</Number>
         </Dial>
       </Response>
     `;
