@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/xml");
-
+const paymentId = req.query.paymentId || "";
   return res.status(200).send(`
     <Response>
       <Gather
