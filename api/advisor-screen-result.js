@@ -27,7 +27,28 @@ const paymentId = req.query.paymentId || "";
       </Response>
     `);
   }
+if (paymentId) {
+  try {
+    const cancelResponse = await fetch(
+      "https://scamcheck-lac.vercel.app/api/cancel-payment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          paymentId: paymentId
+        })
+      }
+    );
 
+    if (!cancelResponse.ok) {
+      console.error("Payment cancellation failed");
+    }
+  } catch (error) {
+    console.error("Payment cancellation error:", error);
+  }
+}
   return res.status(200).send(`
     <Response>
       <Hangup/>
