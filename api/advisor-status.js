@@ -5,7 +5,10 @@ export default async function handler(req, res) {
 
   const dialCallStatus = req.body.DialCallStatus || "";
 const paymentId = req.query.paymentId || "";
-  if (paymentId) {
+ if (
+  paymentId &&
+  ["busy", "no-answer", "failed", "canceled"].includes(dialCallStatus)
+) {
   try {
     const cancelResponse = await fetch(
       "https://scamcheck-lac.vercel.app/api/cancel-payment",
