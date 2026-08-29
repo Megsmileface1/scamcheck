@@ -737,8 +737,9 @@ const paymentId = chargeResult.payment.id;
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      customerPhone: customerPhone
-    })
+  customerPhone: customerPhone,
+  paymentId: paymentId
+})
   });
 
   const callResult = await callResponse.json();
