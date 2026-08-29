@@ -727,7 +727,7 @@ if (
     alert("Your saved card could not be charged. Please try again.");
     return;
   }
-
+const paymentId = chargeResult.payment.id;
   alert("Payment successful. Connecting your ScamCheck call now...");
 
   const callResponse = await fetch("/api/start-call", {
