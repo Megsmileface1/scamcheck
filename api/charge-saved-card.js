@@ -38,7 +38,7 @@ export default async function handler(req, res) {
             currency: "USD"
           },
           customer_id: squareCustomerId,
-          autocomplete: true,
+         autocomplete: false,
           note: "ScamCheck returning customer consultation"
         })
       }
