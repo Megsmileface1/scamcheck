@@ -51,7 +51,7 @@ if (phone && !phone.startsWith("+")) {
             currency: "USD"
           },
 
-          autocomplete: true,
+         autocomplete: false,
           note: "ScamCheck consultation"
         })
       }
