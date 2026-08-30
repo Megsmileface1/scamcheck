@@ -50,8 +50,8 @@ if (paymentId) {
   }
 }
   return res.status(200).send(`
-    <Response>
-      <Hangup/>
-    </Response>
-  `);
+  <Response>
+    <Reject reason="busy"/>
+  </Response>
+`);
 }
