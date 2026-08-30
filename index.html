@@ -555,6 +555,7 @@ if (!saveCardConsent.checked) {
             if (!response.ok || !result.success) {
                 throw new Error("Payment could not be completed.");
             }
+           const paymentId = result.payment.id;
 if (result.squareCustomerId && result.squareCardId) {
   const saveResponse = await fetch("/api/save-user", {
     method: "POST",
