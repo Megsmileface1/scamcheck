@@ -7,6 +7,7 @@ export default async function handler(req, res) {
 
   try {
   const { customerPhone, paymentId } = req.body;
+    console.log("Start call received payment ID:", Boolean(paymentId));
     if (!customerPhone) {
       return res.status(400).json({
         error: "Missing customer phone number"
