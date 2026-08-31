@@ -558,6 +558,7 @@ if (!saveCardConsent.checked) {
            const paymentId = result.payment.id;
 if (result.squareCustomerId && result.squareCardId) {
   const saveResponse = await fetch("/api/save-user", {
+     
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -643,7 +644,31 @@ const paymentStatusResponse = await fetch(
 );
 
 const paymentStatusResult = await paymentStatusResponse.json();
-       
+   if (
+  paymentStatusResponse.ok &&
+  paymentStatusResult.success &&
+  paymentStatusResult.status === "COMPLETED"
+) {
+  document.getElementById("receipt-section").innerHTML = `
+    <h2>Call Completed</h2>
+    <p>Your ScamCheck consultation has ended.</p>
+    <p><strong>$10.00 payment completed.</strong></p>
+    <p>Thank you for using ScamCheck.</p>
+    <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+      Start Another ScamCheck Call — $10
+    </button>
+  `;
+}else {
+  document.getElementById("receipt-section").innerHTML = `
+    <h2>Call Ended</h2>
+    <p>A ScamCheck advisor was not available.</p>
+    <p><strong>Your $10.00 payment was not charged.</strong></p>
+    <p>Please try again shortly.</p>
+    <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+      Try ScamCheck Again — $10
+    </button>
+  `;
+}    
 
       const receiptSection =
         document.getElementById("receipt-section");
@@ -658,7 +683,7 @@ const paymentStatusResult = await paymentStatusResponse.json();
   }
 }, 3000);
 status.innerHTML =
-    "<strong>✓ Payment successful.</strong><br>" +
+   "<strong>✓ Payment authorized.</strong><br>" +
     "ScamCheck is calling you now.";
 
         } catch (error) {
@@ -791,7 +816,38 @@ const returningCallStatusInterval = setInterval(async function () {
       clearInterval(returningCallStatusInterval);
 
       returningCallingSection.style.display = "none";
+const returningPaymentStatusResponse = await fetch(
+  `/api/payment-status?paymentId=${encodeURIComponent(paymentId)}`
+);
 
+const returningPaymentStatusResult =
+  await returningPaymentStatusResponse.json();
+       if (
+  returningPaymentStatusResponse.ok &&
+  returningPaymentStatusResult.success &&
+  returningPaymentStatusResult.status === "COMPLETED"
+) {
+  document.getElementById("receipt-section").innerHTML = `
+    <h2>Call Completed</h2>
+    <p>Your ScamCheck consultation has ended.</p>
+    <p><strong>$10.00 payment completed.</strong></p>
+    <p>Thank you for using ScamCheck.</p>
+    <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+      Start Another ScamCheck Call — $10
+    </button>
+  `;
+}
+       else {
+  document.getElementById("receipt-section").innerHTML = `
+    <h2>Call Ended</h2>
+    <p>A ScamCheck advisor was not available.</p>
+    <p><strong>Your $10.00 payment was not charged.</strong></p>
+    <p>Please try again shortly.</p>
+    <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+      Try ScamCheck Again — $10
+    </button>
+  `;
+}
       const receiptSection =
         document.getElementById("receipt-section");
 
