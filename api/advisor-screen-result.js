@@ -5,30 +5,43 @@ export default async function handler(req, res) {
  
 const paymentId = req.query.paymentId || "";
   if (digits === "1") {
-        if (paymentId) {
-      const completeResponse = await fetch(
-        "https://scamcheck-lac.vercel.app/api/complete-payment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            paymentId: paymentId
-          })
-        }
-      );
-if (!completeResponse.ok) {
-  console.error("Payment completion failed");
+       if (paymentId) {
+  try {
+    const completeResponse = await fetch(
+      "https://scamcheck-lac.vercel.app/api/complete-payment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          paymentId: paymentId
+        })
+      }
+    );
 
-  res.setHeader("Content-Type", "text/xml");
-  return res.status(200).send(`
-    <Response>
-      <Say>
-        We are sorry. We could not complete the payment, so the consultation cannot begin. You will not be charged. Please try again shortly.
-      </Say>
-      <Hangup/>
-    </Response>
+    if (!completeResponse.ok) {
+      console.error("Payment completion failed");
+
+      return res.status(200).send(`
+        <Response>
+          <Say>
+            We are sorry. We could not complete the payment, so the consultation cannot begin. You will not be charged. Please try again shortly.
+          </Say>
+          <Hangup/>
+        </Response>
+      `);
+    }
+  } catch (error) {
+    console.error("Payment completion request failed:", error);
+
+    return res.status(200).send(`
+      <Response>
+        <Say>
+          We are sorry. We could not complete the payment, so the consultation cannot begin. Please try again shortly.
+        </Say>
+        <Hangup/>
+    
   `);
 }
     }
