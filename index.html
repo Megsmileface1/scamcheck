@@ -576,10 +576,10 @@ if (result.squareCustomerId && result.squareCardId) {
   }
 }
             status.innerHTML =
-    "<strong>✓ Test payment successful.</strong><br>" +
+    "<strong>✓ Payment authorized.</strong><br>" +
     "Connecting your ScamCheck call now...";
 
-button.textContent = "Payment Successful";
+button.textContent = "Payment Authorized";
 
 const callResponse = await fetch("/api/start-call", {
     method: "POST",
