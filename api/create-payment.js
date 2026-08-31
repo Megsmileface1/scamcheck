@@ -97,18 +97,22 @@ if (phone) {
   console.error("Square customer error:", customerData);
 
   try {
-    await fetch(
-      `https://connect.squareupsandbox.com/v2/payments/${data.payment.id}/cancel`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Square-Version": "2026-08-19",
-          "Authorization": `Bearer ${process.env.SQUARE_ACCESS_TOKEN}`
-        },
-        body: JSON.stringify({})
-      }
-    );
+   const cancelResponse = await fetch(
+  `https://connect.squareupsandbox.com/v2/payments/${data.payment.id}/cancel`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Square-Version": "2026-08-19",
+      "Authorization": `Bearer ${process.env.SQUARE_ACCESS_TOKEN}`
+    },
+    body: JSON.stringify({})
+  }
+);
+
+if (!cancelResponse.ok) {
+  console.error("Square payment cancellation failed");
+}
   } catch (cancelError) {
     console.error("Payment cancellation error:", cancelError);
   }
