@@ -557,16 +557,19 @@ if (result.squareCustomerId && result.squareCardId) {
 
   const saveResult = await saveResponse.json();
 if (!saveResponse.ok || !saveResult.success) {
-  await fetch("/api/cancel-payment", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      paymentId: paymentId
-    })
-  });
+  const cancelResponse = await fetch("/api/cancel-payment", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    paymentId: paymentId
+  })
+});
 
+if (!cancelResponse.ok) {
+  console.error("Payment cancellation failed");
+}
   throw new Error("Your information could not be saved. Please try again or contact ScamCheck if you see a pending charge.");
 }
             status.innerHTML =
