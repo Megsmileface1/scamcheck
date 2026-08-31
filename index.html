@@ -589,15 +589,19 @@ const callResponse = await fetch("/api/start-call", {
 const callResult = await callResponse.json();
 
 if (!callResponse.ok || !callResult.success) {
-  await fetch("/api/cancel-payment", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      paymentId: paymentId
-    })
-  });
+ const cancelResponse = await fetch("/api/cancel-payment", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    paymentId: paymentId
+  })
+});
+
+if (!cancelResponse.ok) {
+  console.error("Payment cancellation failed");
+}
 
   throw new Error("The call could not be started. Please try again or contact ScamCheck if you see a pending charge.");
 }
