@@ -638,6 +638,12 @@ const callStatusInterval = setInterval(async function () {
       clearInterval(callStatusInterval);
 
       callingSection.style.display = "none";
+const paymentStatusResponse = await fetch(
+  `/api/payment-status?paymentId=${encodeURIComponent(paymentId)}`
+);
+
+const paymentStatusResult = await paymentStatusResponse.json();
+       
 
       const receiptSection =
         document.getElementById("receipt-section");
