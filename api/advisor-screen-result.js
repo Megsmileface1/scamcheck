@@ -18,10 +18,19 @@ const paymentId = req.query.paymentId || "";
           })
         }
       );
+if (!completeResponse.ok) {
+  console.error("Payment completion failed");
 
-      if (!completeResponse.ok) {
-        console.error("Payment completion failed");
-      }
+  res.setHeader("Content-Type", "text/xml");
+  return res.status(200).send(`
+    <Response>
+      <Say>
+        We are sorry. We could not complete the payment, so the consultation cannot begin. You will not be charged. Please try again shortly.
+      </Say>
+      <Hangup/>
+    </Response>
+  `);
+}
     }
     return res.status(200).send(`
       <Response>
