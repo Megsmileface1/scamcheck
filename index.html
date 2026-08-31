@@ -599,7 +599,7 @@ if (!callResponse.ok || !callResult.success) {
     })
   });
 
-  throw new Error("The call could not be started. Your payment was not charged.");
+  throw new Error("The call could not be started. Please try again or contact ScamCheck if you see a pending charge.");
 }
 document.getElementById("payment-section").style.display = "none";
 
