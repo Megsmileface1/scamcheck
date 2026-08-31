@@ -788,7 +788,7 @@ alert("Payment authorized. Connecting your ScamCheck call now...");
     callResult.details?.message ||
     callResult.error ||
     "The call could not be started.";
-await fetch("/api/cancel-payment", {
+const cancelResponse = await fetch("/api/cancel-payment", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -797,6 +797,10 @@ await fetch("/api/cancel-payment", {
     paymentId: paymentId
   })
 });
+
+if (!cancelResponse.ok) {
+  console.error("Payment cancellation failed");
+}
   alert("Twilio says: " + twilioMessage);
   return;
 }
