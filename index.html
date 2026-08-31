@@ -11,7 +11,7 @@
         box-sizing: border-box;
     }
 
-    body {https://scamcheck-lac.vercel.app/api/charge-saved-car
+    body {
         margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
         background: #f4f8fc;
@@ -20,22 +20,7 @@
 
     .topbar {
         background: #12395b;
-        color: white;2026-08-26 15:28:30.285 [error] Square customer error: {
-  errors: [
-    {
-      code: 'INVALID_PHONE_NUMBER',
-      detail: 'Expected phone_number to be a valid phone number',
-      field: 'phone_number',
-      category: 'INVALID_REQUEST_ERROR'
-    }
-  ]
-}
-2026-08-26 15:28:30.288 [error] Payment error: Error: Could not create Square customer
-    at handler (/var/task/api/create-payment.js:88:11)
-    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
-    at async r (/opt/rust/nodejs.js:2:16316)
-    at async Server.<anonymous> (/opt/rust/nodejs.js:2:12267)
-    at async Server.<anonymous> (/opt/rust/nodejs.js:17:14507)
+  color: white;
         text-align: center;
         padding: 10px 15px;
         font-size: 14px;
@@ -596,7 +581,17 @@ const callResponse = await fetch("/api/start-call", {
 const callResult = await callResponse.json();
 
 if (!callResponse.ok || !callResult.success) {
-    throw new Error("Payment worked, but the call could not be started.");
+  await fetch("/api/cancel-payment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      paymentId: paymentId
+    })
+  });
+
+  throw new Error("The call could not be started. Your payment was not charged.");
 }
 document.getElementById("payment-section").style.display = "none";
 
@@ -781,7 +776,15 @@ alert("Payment authorized. Connecting your ScamCheck call now...");
     callResult.details?.message ||
     callResult.error ||
     "The call could not be started.";
-
+await fetch("/api/cancel-payment", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    paymentId: paymentId
+  })
+});
   alert("Twilio says: " + twilioMessage);
   return;
 }
