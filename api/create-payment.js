@@ -123,10 +123,28 @@ if (phone) {
 
   const cardData = await cardResponse.json();
 
-  if (!cardResponse.ok) {
-    console.error("Square card error:", cardData);
-    throw new Error("Payment succeeded, but card could not be saved");
+ if (!cardResponse.ok) {
+  console.error("Square card error:", cardData);
+
+  try {
+    await fetch(
+      `https://connect.squareupsandbox.com/v2/payments/${data.payment.id}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Square-Version": "2026-08-19",
+          "Authorization": `Bearer ${process.env.SQUARE_ACCESS_TOKEN}`
+        },
+        body: JSON.stringify({})
+      }
+    );
+  } catch (cancelError) {
+    console.error("Payment cancellation error:", cancelError);
   }
+
+  throw new Error("Card could not be saved");
+}
 
   squareCardId = cardData.card.id;
 }
