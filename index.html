@@ -761,7 +761,7 @@ if (
     return;
   }
 const paymentId = chargeResult.payment.id;
-  alert("Payment successful. Connecting your ScamCheck call now...");
+alert("Payment authorized. Connecting your ScamCheck call now...");
 
   const callResponse = await fetch("/api/start-call", {
     method: "POST",
