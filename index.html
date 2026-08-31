@@ -556,10 +556,19 @@ if (result.squareCustomerId && result.squareCardId) {
   });
 
   const saveResult = await saveResponse.json();
+if (!saveResponse.ok || !saveResult.success) {
+  await fetch("/api/cancel-payment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      paymentId: paymentId
+    })
+  });
 
-  if (!saveResponse.ok || !saveResult.success) {
-    throw new Error("Payment worked, but the saved card information could not be stored.");
-  }
+  throw new Error("Your information could not be saved. Your payment was not charged.");
+}
 }
             status.innerHTML =
     "<strong>✓ Payment authorized.</strong><br>" +
