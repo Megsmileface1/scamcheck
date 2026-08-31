@@ -567,8 +567,7 @@ if (!saveResponse.ok || !saveResult.success) {
     })
   });
 
-  throw new Error("Your information could not be saved. Your payment was not charged.");
-}
+  throw new Error("Your information could not be saved. Please try again or contact ScamCheck if you see a pending charge.");
 }
             status.innerHTML =
     "<strong>✓ Payment authorized.</strong><br>" +
