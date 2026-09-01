@@ -26,7 +26,7 @@ const paymentId = req.query.paymentId || "";
       return res.status(200).send(`
         <Response>
           <Say>
-            We are sorry. We could not complete the payment, so the consultation cannot begin. You will not be charged. Please try again shortly.
+           We are sorry. We could not complete the payment, so the consultation cannot begin. Please try again shortly.
           </Say>
           <Hangup/>
         </Response>
