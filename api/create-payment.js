@@ -165,7 +165,7 @@ if (!cancelResponse.ok) {
   if (!cancelResponse.ok) {
     console.error("Square payment cancellation failed");
   }
-}
+
   } catch (cancelError) {
     console.error("Payment cancellation error:", cancelError);
   }
