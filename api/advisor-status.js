@@ -84,6 +84,6 @@ paymentStatus = paymentData.payment?.status || "";
 return res.status(200).send(
   paymentCompleted
     ? "<Response><Hangup/></Response>"
-    : "<Response><Say>We are sorry. A ScamCheck advisor is not available right now. Your payment was not charged. Please try again shortly.</Say><Hangup/></Response>"
+    : "<Response><Say>We are sorry. A ScamCheck advisor is not available right now. Your payment was not completed. Please try again shortly.</Say><Hangup/></Response>"
 );
 }
