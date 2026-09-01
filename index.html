@@ -695,7 +695,7 @@ const paymentStatusResult = await paymentStatusResponse.json();
 status.innerHTML =
    "<strong>✓ Payment authorized.</strong><br>" +
     "ScamCheck is calling you now.";
-
+}
         } catch (error) {
             status.textContent = error.message;
            
