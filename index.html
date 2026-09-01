@@ -572,6 +572,7 @@ if (!cancelResponse.ok) {
 }
   throw new Error("Your information could not be saved. Please try again or contact ScamCheck if you see a pending charge.");
 }
+   }
             status.innerHTML =
     "<strong>✓ Payment authorized.</strong><br>" +
     "Connecting your ScamCheck call now...";
@@ -695,7 +696,6 @@ const paymentStatusResult = await paymentStatusResponse.json();
 status.innerHTML =
    "<strong>✓ Payment authorized.</strong><br>" +
     "ScamCheck is calling you now.";
-}
         } catch (error) {
             status.textContent = error.message;
            
