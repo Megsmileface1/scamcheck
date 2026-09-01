@@ -72,9 +72,30 @@ paymentStatus = paymentData.payment?.status || "";
     if (!cancelResponse.ok) {
       console.error("Payment cancellation failed");
     }
+ } catch (error) {
+  console.error("Could not verify payment status:", error);
+
+  try {
+    const cancelResponse = await fetch(
+      "https://scamcheck-lac.vercel.app/api/cancel-payment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          paymentId: paymentId
+        })
+      }
+    );
+
+    if (!cancelResponse.ok) {
+      console.error("Payment cancellation failed");
+    }
   } catch (cancelError) {
     console.error("Payment cancellation error:", cancelError);
   }
+}
 }
   } catch (error) {
     console.error("Could not verify payment status:", error);
