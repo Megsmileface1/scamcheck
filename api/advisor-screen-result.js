@@ -41,7 +41,7 @@ const paymentId = req.query.paymentId || "";
           We are sorry. We could not complete the payment, so the consultation cannot begin. Please try again shortly.
         </Say>
         <Hangup/>
-    
+    </Response>
   `);
 }
     }
