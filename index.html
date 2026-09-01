@@ -672,7 +672,7 @@ const paymentStatusResult = await paymentStatusResponse.json();
   document.getElementById("receipt-section").innerHTML = `
     <h2>Call Ended</h2>
     <p>A ScamCheck advisor was not available.</p>
-    <p><strong>Your $10.00 payment was not charged.</strong></p>
+    <p><strong>Your payment was not completed.</strong></p>
     <p>Please try again shortly.</p>
     <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
       Try ScamCheck Again — $10
@@ -863,7 +863,7 @@ const returningPaymentStatusResult =
   document.getElementById("receipt-section").innerHTML = `
     <h2>Call Ended</h2>
     <p>A ScamCheck advisor was not available.</p>
-    <p><strong>Your $10.00 payment was not charged.</strong></p>
+    <p><strong>Your payment was not completed.</strong></p>
     <p>Please try again shortly.</p>
     <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
       Try ScamCheck Again — $10
