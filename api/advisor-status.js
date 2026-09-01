@@ -34,7 +34,7 @@ const paymentId = req.query.paymentId || "";
 
   res.setHeader("Content-Type", "text/xml");
 let paymentCompleted = false;
-
+let paymentStatus = "";
 if (paymentId) {
   try {
     const paymentResponse = await fetch(
@@ -49,11 +49,33 @@ if (paymentId) {
     );
 
     const paymentData = await paymentResponse.json();
-
+paymentStatus = paymentData.payment?.status || "";
     paymentCompleted =
       paymentResponse.ok &&
       paymentData.payment &&
       paymentData.payment.status === "COMPLETED";
+    if (paymentStatus === "APPROVED") {
+  try {
+    const cancelResponse = await fetch(
+      "https://scamcheck-lac.vercel.app/api/cancel-payment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          paymentId: paymentId
+        })
+      }
+    );
+
+    if (!cancelResponse.ok) {
+      console.error("Payment cancellation failed");
+    }
+  } catch (cancelError) {
+    console.error("Payment cancellation error:", cancelError);
+  }
+}
   } catch (error) {
     console.error("Could not verify payment status:", error);
   }
