@@ -947,13 +947,11 @@ if (!confirmed) {
 }
 
    
-   function sendSomething(event) {
-    event.preventDefault();
+ function sendSomething(event) {
+  event.preventDefault();
 
-    alert(
-        "This area will allow customers to provide supporting information " +
-        "during their ScamCheck consultation."
-    );
+  const supportForm = document.getElementById("support-form");
+  supportForm.style.display = "block";
 }
 
 </script>
