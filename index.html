@@ -472,7 +472,26 @@
 
         <a href="#" class="secondary-button" onclick="sendSomething(event)">
             Send Supporting Information
-        </a>
+        </a><div id="support-form" style="display:none; margin-top:25px; text-align:left;">
+
+  <label for="support-text" style="display:block; font-weight:700; margin-bottom:8px;">
+    Message or information
+  </label>
+
+  <textarea
+    id="support-text"
+    rows="6"
+    placeholder="Type or paste the message, email, or other information here."
+    style="width:100%; box-sizing:border-box; padding:12px; border:1px solid #cbd5e1; border-radius:10px; font-size:16px;"
+  ></textarea>
+
+  <label for="support-image" style="display:block; font-weight:700; margin-top:18px; margin-bottom:8px;">
+    Screenshot or photo
+  </label>
+
+  <input id="support-image" type="file" accept="image/*">
+
+</div>
 
     </section>
 
