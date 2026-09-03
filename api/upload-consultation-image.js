@@ -32,15 +32,10 @@ export default async function handler(req, res) {
       throw uploadError;
     }
 
-    const { data } = supabase.storage
-      .from("consultation-images")
-      .getPublicUrl(safeFileName);
-
-    return res.status(200).json({
-      success: true,
-      imageUrl: data.publicUrl
-    });
-
+   return res.status(200).json({
+  success: true,
+  imagePath: safeFileName
+});
   } catch (error) {
     console.error("Upload consultation image error:", error);
 
