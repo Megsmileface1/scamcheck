@@ -959,7 +959,47 @@ if (!confirmed) {
   const supportForm = document.getElementById("support-form");
   supportForm.style.display = "block";
 }
+document.getElementById("support-submit").onclick = async function () {
+  const phoneInput = document.getElementById("customer-phone");
+  const messageInput = document.getElementById("support-text");
 
+  const customerPhone = phoneInput.value.replace(/\D/g, "");
+  const customerMessage = messageInput.value.trim();
+
+  if (customerPhone.length !== 10) {
+    alert("Please enter your 10-digit phone number at the top of the page first.");
+    return;
+  }
+
+  if (!customerMessage) {
+    alert("Please type or paste the information you want to send.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/save-consultation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        customerPhone,
+        customerMessage,
+        supportingImageUrl: null
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Could not send information");
+    }
+
+    alert("Your information was sent to the ScamCheck advisor.");
+  } catch (error) {
+    alert("We could not send your information. Please try again.");
+  }
+};
 </script>
 
 </body>
