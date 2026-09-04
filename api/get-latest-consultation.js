@@ -21,10 +21,23 @@ export default async function handler(req, res) {
     if (error) {
       throw error;
     }
+let imageSignedUrl = null;
 
+if (data.supporting_image_url) {
+  const { data: signedData, error: signedError } = await supabase.storage
+    .from("consultation-images")
+    .createSignedUrl(data.supporting_image_url, 600);
+
+  if (!signedError && signedData) {
+    imageSignedUrl = signedData.signedUrl;
+  }
+}
     return res.status(200).json({
       success: true,
-      consultation: data
+      consultation: {
+  ...data,
+  supporting_image_signed_url: imageSignedUrl
+}
     });
   } catch (error) {
     console.error("Get latest consultation error:", error);
