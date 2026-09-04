@@ -999,6 +999,7 @@ const uploadResponse = await fetch("/api/upload-consultation-image", {
            throw new Error(uploadResult.error || "Could not upload image");
          
 }  supportingImagePath = uploadResult.imagePath;
+        }
     const response = await fetch("/api/save-consultation", {
       method: "POST",
       headers: {
