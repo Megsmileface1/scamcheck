@@ -962,10 +962,11 @@ if (!confirmed) {
 document.getElementById("support-submit").onclick = async function () {
   const phoneInput = document.getElementById("customer-phone");
   const messageInput = document.getElementById("support-text");
-
+const imageInput = document.getElementById("support-image");
   const customerPhone = phoneInput.value.replace(/\D/g, "");
   const customerMessage = messageInput.value.trim();
-
+const imageFile = imageInput.files[0] || null;
+   let supportingImagePath = null;
   if (customerPhone.length !== 10) {
     alert("Please enter your 10-digit phone number at the top of the page first.");
     return;
@@ -977,6 +978,27 @@ document.getElementById("support-submit").onclick = async function () {
   }
 
   try {
+     if (imageFile) {
+        const fileData = await new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result.split(",")[1]);
+  reader.onerror = reject;
+  reader.readAsDataURL(imageFile);
+});
+const uploadResponse = await fetch("/api/upload-consultation-image", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({
+      fileName: imageFile.name,
+      fileType: imageFile.type,
+      fileData: fileData
+      })
+   });
+        const uploadResult = await uploadResponse.json();
+        if (!uploadResponse.ok) {
+           throw new Error(uploadResult.error || "Could not upload image");
+         
+}  supportingImagePath = uploadResult.imagePath;
     const response = await fetch("/api/save-consultation", {
       method: "POST",
       headers: {
@@ -985,7 +1007,7 @@ document.getElementById("support-submit").onclick = async function () {
       body: JSON.stringify({
         customerPhone,
         customerMessage,
-        supportingImageUrl: null
+       supportingImageUrl: supportingImagePath
       })
     });
 
