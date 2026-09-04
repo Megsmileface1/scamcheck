@@ -95,6 +95,8 @@ const result = await response.json();
     const consultation = result.consultation;
  document.getElementById("advisor-phone").textContent =
   consultation.customer_phone || "No active consultation";
+    document.getElementById("advisor-message").textContent =
+  consultation.customer_message || "No supporting text received.";
    const imageBox = document.getElementById("advisor-image");
 
 if (consultation.supporting_image_signed_url) {
