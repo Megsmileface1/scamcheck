@@ -116,6 +116,8 @@ const result = await response.json();
   return;
 }
     const consultation = result.consultation;
+    document.querySelector("#advisor-dashboard .card .placeholder").textContent =
+  "Customer information received — ready for consultation";
  document.getElementById("advisor-phone").textContent =
   consultation.customer_phone || "No active consultation";
     document.getElementById("advisor-message").textContent =
