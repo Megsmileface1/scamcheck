@@ -105,7 +105,15 @@
       <div class="label">Supporting Image</div>
   <div class="placeholder" id="advisor-image">No image received.</div>
     </div>
-
+<div style="text-align:center; margin-top:25px;">
+  <button
+    type="button"
+    onclick="readyForNextCall()"
+    style="padding:14px 24px; font-size:16px; font-weight:bold; cursor:pointer;"
+  >
+    Ready for Next Call
+  </button>
+</div>
   </div>
 </div>
 <script>
@@ -116,10 +124,18 @@ const result = await response.json();
   return;
 }
     const consultation = result.consultation;
+    if (
+  lastHandledConsultationId &&
+String(consultation.id) === lastHandledConsultationId
+) {
+  return;
+}
     document.querySelector("#advisor-dashboard .card .placeholder").textContent =
   "Customer information received — ready for consultation";
  document.getElementById("advisor-phone").textContent =
   consultation.customer_phone || "No active consultation";
+    document.getElementById("advisor-phone").dataset.consultationId =
+  String(consultation.id);
     document.getElementById("advisor-message").textContent =
   consultation.customer_message || "No supporting text received.";
    const imageBox = document.getElementById("advisor-image");
@@ -133,6 +149,23 @@ if (consultation.supporting_image_signed_url) {
  }
  let advisorRefreshTimer = null;
 let lastHandledConsultationId = null;
+
+  function readyForNextCall() {
+  const phoneBox = document.getElementById("advisor-phone");
+
+  if (phoneBox.dataset.consultationId) {
+    lastHandledConsultationId = phoneBox.dataset.consultationId;
+  }
+
+  document.querySelector("#advisor-dashboard .card .placeholder").textContent =
+    "Waiting for a ScamCheck call...";
+
+  phoneBox.textContent = "No active consultation";
+  document.getElementById("advisor-message").textContent =
+    "No supporting text received.";
+  document.getElementById("advisor-image").textContent =
+    "No image received.";
+}
 function showAdvisorDashboard() {
   document.getElementById("advisor-login").style.display = "none";
   document.getElementById("advisor-dashboard").style.display = "block";
