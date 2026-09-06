@@ -126,8 +126,59 @@ if (consultation.supporting_image_signed_url) {
 }
  
  }
+ let advisorRefreshTimer = null;
+
+function showAdvisorDashboard() {
+  document.getElementById("advisor-login").style.display = "none";
+  document.getElementById("advisor-dashboard").style.display = "block";
+
   loadLatestConsultation();
-  setInterval(loadLatestConsultation, 5000);
+
+  if (!advisorRefreshTimer) {
+    advisorRefreshTimer = setInterval(loadLatestConsultation, 5000);
+  }
+}
+
+async function checkAdvisorAuth() {
+  try {
+    const response = await fetch("/api/advisor-auth");
+
+    if (response.ok) {
+      showAdvisorDashboard();
+    }
+  } catch (error) {
+    console.error("Advisor authentication check failed:", error);
+  }
+}
+
+async function advisorLogin() {
+  const password = document.getElementById("advisor-password").value;
+  const errorBox = document.getElementById("login-error");
+
+  errorBox.textContent = "";
+
+  try {
+    const response = await fetch("/api/advisor-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password })
+    });
+
+    if (!response.ok) {
+      errorBox.textContent = "Incorrect password.";
+      return;
+    }
+
+    document.getElementById("advisor-password").value = "";
+    showAdvisorDashboard();
+  } catch (error) {
+    errorBox.textContent = "Unable to log in. Please try again.";
+  }
+}
+
+checkAdvisorAuth();
   </script>
 </body>
 </html>
