@@ -132,7 +132,7 @@ if (consultation.supporting_image_signed_url) {
  
  }
  let advisorRefreshTimer = null;
-
+let lastHandledConsultationId = null;
 function showAdvisorDashboard() {
   document.getElementById("advisor-login").style.display = "none";
   document.getElementById("advisor-dashboard").style.display = "block";
