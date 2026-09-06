@@ -148,14 +148,19 @@ if (consultation.supporting_image_signed_url) {
  
  }
  let advisorRefreshTimer = null;
-let lastHandledConsultationId = null;
+let lastHandledConsultationId =
+  localStorage.getItem("scamcheckLastHandledConsultationId");
 
   function readyForNextCall() {
   const phoneBox = document.getElementById("advisor-phone");
 
   if (phoneBox.dataset.consultationId) {
-    lastHandledConsultationId = phoneBox.dataset.consultationId;
-  }
+  lastHandledConsultationId = phoneBox.dataset.consultationId;
+  localStorage.setItem(
+    "scamcheckLastHandledConsultationId",
+    lastHandledConsultationId
+  );
+}
 
   document.querySelector("#advisor-dashboard .card .placeholder").textContent =
     "Waiting for a ScamCheck call...";
