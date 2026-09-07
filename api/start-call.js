@@ -1,3 +1,9 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY
+);
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -66,7 +72,30 @@ action="https://scamcheck-lac.vercel.app/api/advisor-status?paymentId=${encodeUR
         details: data
       });
     }
+try {
+  const { error: consultationError } = await supabase
+    .from("consultations")
+    .insert([
+      {
+        customer_phone: customerPhone || null,
+        payment_id: paymentId || null,
+        call_sid: data.sid || null,
+        status: "calling"
+      }
+    ]);
 
+  if (consultationError) {
+    console.error(
+      "Could not create call consultation record:",
+      consultationError
+    );
+  }
+} catch (consultationError) {
+  console.error(
+    "Call consultation logging error:",
+    consultationError
+  );
+}
     return res.status(200).json({
       success: true,
       callSid: data.sid
