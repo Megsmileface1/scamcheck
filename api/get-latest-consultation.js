@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   try {
     const { data, error } = await supabase
       .from("consultations")
-      .select("id, created_at, customer_phone, customer_message, supporting_image_url")
+      .select("id, created_at, customer_phone, customer_message, supporting_image_url, payment_id, status, call_sid, accepted_at, completed_at")
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
