@@ -43,12 +43,14 @@ action="https://scamcheck-lac.vercel.app/api/advisor-status?paymentId=${encodeUR
       </Response>
     `;
 
-    const body = new URLSearchParams({
-      To: customerPhone,
-      From: twilioNumber,
-      Twiml: twiml
-    });
-
+   const body = new URLSearchParams({
+  To: customerPhone,
+  From: twilioNumber,
+  Twiml: twiml,
+  StatusCallback: "https://scamcheck-lac.vercel.app/api/call-completed",
+  StatusCallbackMethod: "POST",
+  StatusCallbackEvent: "completed"
+});
     const response = await fetch(
       `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Calls.json`,
       {
