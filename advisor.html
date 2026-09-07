@@ -124,6 +124,29 @@ const result = await response.json();
   return;
 }
     const consultation = result.consultation;
+    if (consultation.status === "completed") {
+  lastHandledConsultationId = String(consultation.id);
+
+  localStorage.setItem(
+    "scamcheckLastHandledConsultationId",
+    lastHandledConsultationId
+  );
+
+  document.querySelector("#advisor-dashboard .card .placeholder").textContent =
+    "Waiting for a ScamCheck call...";
+
+  const phoneBox = document.getElementById("advisor-phone");
+  phoneBox.textContent = "No active consultation";
+  phoneBox.dataset.consultationId = "";
+
+  document.getElementById("advisor-message").textContent =
+    "No supporting text received.";
+
+  document.getElementById("advisor-image").textContent =
+    "No image received.";
+
+  return;
+}
     if (
   lastHandledConsultationId &&
 String(consultation.id) === lastHandledConsultationId
