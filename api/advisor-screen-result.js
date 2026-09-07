@@ -1,3 +1,9 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY
+);
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/xml");
 
@@ -32,6 +38,27 @@ const paymentId = req.query.paymentId || "";
         </Response>
       `);
     }
+   try {
+  const { error: consultationUpdateError } = await supabase
+    .from("consultations")
+    .update({
+      status: "accepted",
+      accepted_at: new Date().toISOString()
+    })
+    .eq("payment_id", paymentId);
+
+  if (consultationUpdateError) {
+    console.error(
+      "Could not mark consultation accepted:",
+      consultationUpdateError
+    );
+  }
+} catch (consultationUpdateError) {
+  console.error(
+    "Consultation acceptance logging error:",
+    consultationUpdateError
+  );
+}
   } catch (error) {
     console.error("Payment completion request failed:", error);
 
