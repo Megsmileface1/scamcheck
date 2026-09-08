@@ -1011,12 +1011,18 @@ const uploadResponse = await fetch("/api/upload-consultation-image", {
        supportingImageUrl: supportingImagePath
       })
     });
+const result = await response.json();
 
-    const result = await response.json();
+if (!response.ok) {
+  throw new Error(result.error || "Could not send information");
+}
 
-    if (!response.ok) {
-      throw new Error(result.error || "Could not send information");
-    }
+if (result.consultation && result.consultation.id) {
+  localStorage.setItem(
+    "scamcheckCurrentConsultationId",
+    String(result.consultation.id)
+  );
+}
 
     alert("Your information was sent to the ScamCheck advisor.");
   } catch (error) {
