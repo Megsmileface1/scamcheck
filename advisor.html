@@ -113,6 +113,14 @@
   >
     Ready for Next Call
   </button>
+  <button
+  type="button"
+  id="availability-button"
+  onclick="toggleAdvisorAvailability()"
+  style="padding:14px 24px; margin-left:10px; font-size:16px; font-weight:bold; cursor:pointer;"
+>
+  Go Available
+</button>
 </div>
   </div>
 </div>
@@ -173,7 +181,42 @@ if (consultation.supporting_image_signed_url) {
  let advisorRefreshTimer = null;
 let lastHandledConsultationId =
   localStorage.getItem("scamcheckLastHandledConsultationId");
+let advisorIsAvailable = false;
 
+async function toggleAdvisorAvailability() {
+  const button = document.getElementById("availability-button");
+  const newAvailability = !advisorIsAvailable;
+
+  button.disabled = true;
+
+  try {
+    const response = await fetch("/api/advisor-availability", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        isAvailable: newAvailability
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error("Could not update availability");
+    }
+
+    advisorIsAvailable = newAvailability;
+    button.textContent = advisorIsAvailable
+      ? "Go Unavailable"
+      : "Go Available";
+
+  } catch (error) {
+    alert("Could not change advisor availability. Please try again.");
+  } finally {
+    button.disabled = false;
+  }
+}
   function readyForNextCall() {
   const phoneBox = document.getElementById("advisor-phone");
 
