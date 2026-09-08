@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-  const { customerPhone, paymentId } = req.body;
+ const { customerPhone, paymentId, consultationId } = req.body;
    
     if (!customerPhone) {
       return res.status(400).json({
@@ -75,20 +75,47 @@ action="https://scamcheck-lac.vercel.app/api/advisor-status?paymentId=${encodeUR
       });
     }
 try {
-  const { error: consultationError } = await supabase
-    .from("consultations")
-    .insert([
-      {
+  let consultationError = null;
+  let consultationUpdated = false;
+
+  if (consultationId) {
+    const { data: updatedConsultations, error: updateError } = await supabase
+      .from("consultations")
+      .update({
         customer_phone: customerPhone || null,
         payment_id: paymentId || null,
         call_sid: data.sid || null,
         status: "calling"
-      }
-    ]);
+      })
+      .eq("id", consultationId)
+      .eq("customer_phone", customerPhone)
+      .select("id");
+
+    consultationError = updateError;
+    consultationUpdated =
+      !updateError &&
+      updatedConsultations &&
+      updatedConsultations.length > 0;
+  }
+
+  if (!consultationUpdated && !consultationError) {
+    const { error: insertError } = await supabase
+      .from("consultations")
+      .insert([
+        {
+          customer_phone: customerPhone || null,
+          payment_id: paymentId || null,
+          call_sid: data.sid || null,
+          status: "calling"
+        }
+      ]);
+
+    consultationError = insertError;
+  }
 
   if (consultationError) {
     console.error(
-      "Could not create call consultation record:",
+      "Could not create or update call consultation record:",
       consultationError
     );
   }
