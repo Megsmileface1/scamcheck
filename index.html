@@ -610,9 +610,10 @@ const callResponse = await fetch("/api/start-call", {
     headers: {
         "Content-Type": "application/json"
     },
-  body: JSON.stringify({
+body: JSON.stringify({
   customerPhone: customerPhone,
-  paymentId: paymentId
+  paymentId: paymentId,
+  consultationId: localStorage.getItem("scamcheckCurrentConsultationId") || null
 })
 });
 
@@ -804,9 +805,10 @@ alert("Payment authorized. Connecting your ScamCheck call now...");
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
+   body: JSON.stringify({
   customerPhone: customerPhone,
-  paymentId: paymentId
+  paymentId: paymentId,
+  consultationId: localStorage.getItem("scamcheckCurrentConsultationId") || null
 })
   });
 
