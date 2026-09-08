@@ -738,7 +738,26 @@ async function startCall(event, phoneOverride = "") {
   if (event) {
     event.preventDefault();
   }
+try {
+  const availabilityResponse = await fetch("/api/advisor-availability-status");
+  const availabilityResult = await availabilityResponse.json();
 
+  if (
+    !availabilityResponse.ok ||
+    !availabilityResult.success ||
+    !availabilityResult.isAvailable
+  ) {
+    alert(
+      "A ScamCheck advisor is not available right now. Please try again shortly."
+    );
+    return;
+  }
+} catch (error) {
+  alert(
+    "We could not confirm advisor availability. Please try again shortly."
+  );
+  return;
+}
 const phoneInput = document.getElementById("customer-phone");
 
 const phone =
