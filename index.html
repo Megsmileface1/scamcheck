@@ -636,6 +636,7 @@ if (!cancelResponse.ok) {
 
   throw new Error("The call could not be started. Please try again or contact ScamCheck if you see a pending charge.");
 }
+           localStorage.removeItem("scamcheckCurrentConsultationId");
 document.getElementById("payment-section").style.display = "none";
 
 const callingSection = document.getElementById("calling-section");
