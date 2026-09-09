@@ -31,7 +31,7 @@ if (phone && !phone.startsWith("+")) {
       Math.random().toString(36).substring(2);
 
     const squareResponse = await fetch(
-      "https://connect.squareupsandbox.com/v2/payments",
+      "https://connect.squareup.com/v2/payments",
       {
         method: "POST",
 
@@ -74,7 +74,7 @@ let squareCardId = null;
 
 if (phone) {
   const customerResponse = await fetch(
-    "https://connect.squareupsandbox.com/v2/customers",
+    "https://connect.squareup.com/v2/customers",
     {
       method: "POST",
       headers: {
@@ -98,7 +98,7 @@ if (phone) {
 
   try {
    const cancelResponse = await fetch(
-  `https://connect.squareupsandbox.com/v2/payments/${data.payment.id}/cancel`,
+  `https://connect.squareup.com/v2/payments/${data.payment.id}/cancel`,
   {
     method: "POST",
     headers: {
@@ -123,7 +123,7 @@ if (!cancelResponse.ok) {
   squareCustomerId = customerData.customer.id;
 
   const cardResponse = await fetch(
-    "https://connect.squareupsandbox.com/v2/cards",
+    "https://connect.squareup.com/v2/cards",
     {
       method: "POST",
       headers: {
@@ -150,7 +150,7 @@ if (!cancelResponse.ok) {
 
   try {
   const cancelResponse = await fetch(
-    `https://connect.squareupsandbox.com/v2/payments/${data.payment.id}/cancel`,
+    `https://connect.squareup.com/v2/payments/${data.payment.id}/cancel`,
     {
       method: "POST",
       headers: {
