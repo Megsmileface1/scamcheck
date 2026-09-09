@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>ScamCheck — Talk to a Real Person</title>
-<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+<script src="https://web.squarecdn.com/v1/square.js"></script>
 <style>
     * {
         box-sizing: border-box;
@@ -319,7 +319,7 @@
     <h3>Complete your $10 ScamCheck consultation payment</h3>
 
     <p>
-        Enter your card information below. This is a Square Sandbox test payment.
+        Enter your card information below. Your payment is securely processed by Square.
     </p>
 
     <div id="card-container"></div>
@@ -520,8 +520,8 @@ async function initializeSquare() {
     if (squareCard) return;
 
     squarePayments = Square.payments(
-        "sandbox-sq0idb-g-hF8WJa65Oi_kjo-DfYKA",
-        "LGQJB2J51P6FH"
+        "sq0idp-tT5PvqfYrzGeg3Y3q3Q8LQ",
+        "L6ZJ71WZNGBYN"
     );
 
     squareCard = await squarePayments.card();
