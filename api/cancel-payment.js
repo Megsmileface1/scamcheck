@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     }
 
     const squareResponse = await fetch(
-      `https://connect.squareupsandbox.com/v2/payments/${paymentId}/cancel`,
+      `https://connect.squareup.com/v2/payments/${paymentId}/cancel`,
       {
         method: "POST",
         headers: {
