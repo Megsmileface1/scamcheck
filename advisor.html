@@ -106,6 +106,9 @@
   <div class="placeholder" id="advisor-image">No image received.</div>
     </div>
 <div style="text-align:center; margin-top:25px;">
+  <div id="availability-status" style="font-weight:bold; margin-bottom:15px;">
+  Advisor Availability: Checking...
+</div>
   <button
     type="button"
     onclick="readyForNextCall()"
@@ -182,7 +185,32 @@ if (consultation.supporting_image_signed_url) {
 let lastHandledConsultationId =
   localStorage.getItem("scamcheckLastHandledConsultationId");
 let advisorIsAvailable = false;
+async function loadAdvisorAvailability() {
+  const button = document.getElementById("availability-button");
+  const statusBox = document.getElementById("availability-status");
 
+  try {
+    const response = await fetch("/api/advisor-availability");
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error("Could not load advisor availability");
+    }
+
+    advisorIsAvailable = result.isAvailable;
+
+    button.textContent = advisorIsAvailable
+      ? "Go Unavailable"
+      : "Go Available";
+
+    statusBox.textContent = advisorIsAvailable
+      ? "Advisor Availability: AVAILABLE"
+      : "Advisor Availability: UNAVAILABLE";
+
+  } catch (error) {
+    statusBox.textContent = "Advisor Availability: Unable to check";
+  }
+}
 async function toggleAdvisorAvailability() {
   const button = document.getElementById("availability-button");
   const newAvailability = !advisorIsAvailable;
@@ -210,7 +238,10 @@ async function toggleAdvisorAvailability() {
     button.textContent = advisorIsAvailable
       ? "Go Unavailable"
       : "Go Available";
-
+const statusBox = document.getElementById("availability-status");
+statusBox.textContent = advisorIsAvailable
+  ? "Advisor Availability: AVAILABLE"
+  : "Advisor Availability: UNAVAILABLE";
   } catch (error) {
     alert("Could not change advisor availability. Please try again.");
   } finally {
@@ -242,7 +273,7 @@ function showAdvisorDashboard() {
   document.getElementById("advisor-dashboard").style.display = "block";
 
   loadLatestConsultation();
-
+loadAdvisorAvailability();
   if (!advisorRefreshTimer) {
     advisorRefreshTimer = setInterval(loadLatestConsultation, 5000);
   }
