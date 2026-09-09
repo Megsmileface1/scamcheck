@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await fetch(
-      `https://connect.squareupsandbox.com/v2/payments/${paymentId}`,
+      `https://connect.squareup.com/v2/payments/${paymentId}`,
       {
         method: "GET",
         headers: {
