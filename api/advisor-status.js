@@ -38,7 +38,7 @@ let paymentStatus = "";
 if (paymentId) {
   try {
     const paymentResponse = await fetch(
-      `https://connect.squareupsandbox.com/v2/payments/${paymentId}`,
+      `https://connect.squareup.com/v2/payments/${paymentId}`,
       {
         method: "GET",
         headers: {
