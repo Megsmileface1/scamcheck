@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
     const response = await fetch(
-      `${supabaseUrl}/rest/v1/users?phone_number=eq.${encodeURIComponent(phone)}&select=id,phone_number,square_customer_id,square_card_id`,
+      `${supabaseUrl}/rest/v1/users?phone_number=eq.${encodeURIComponent(phone)}&select=id,phone_number,square_customer_id,square_card_id,call_credits`,
       {
         method: "GET",
         headers: {
@@ -52,12 +52,13 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       found: true,
-      user: {
-        id: user.id,
-        phone_number: user.phone_number,
-        square_customer_id: user.square_customer_id,
-        square_card_id: user.square_card_id
-      }
+     user: {
+  id: user.id,
+  phone_number: user.phone_number,
+  square_customer_id: user.square_customer_id,
+  square_card_id: user.square_card_id,
+  call_credits: user.call_credits || 0
+}
     });
 
   } catch (error) {
