@@ -816,7 +816,13 @@ if (
     lookupResult.user.square_customer_id &&
     lookupResult.user.square_card_id
 ) {
-   try {
+   const returningTermsAccepted = confirm(
+  "By continuing, you agree to the ScamCheck Terms & Conditions and acknowledge the Privacy Policy. Continue with this $10 consultation?"
+);
+
+if (!returningTermsAccepted) {
+  return;
+}try {
   const chargeResponse = await fetch("/api/charge-saved-card", {
     method: "POST",
     headers: {
