@@ -469,11 +469,76 @@
   </div>
 
   <button
-    type="button"
-    disabled
+  type="button"
+  id="family-plan-button"
+  onclick="showFamilyPlanPurchase()"
+  style="
+    width:100%;
+    max-width:500px;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:#1976a8;
+    color:white;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+  "
+>
+  Purchase Family Plan — $50
+</button><div
+  id="family-plan-purchase-form"
+  style="
+    display:none;
+    max-width:500px;
+    margin:22px auto 0 auto;
+    text-align:left;
+  "
+>
+  <label
+    for="family-recipient-phone"
+    style="display:block; margin-bottom:6px; font-weight:700;"
+  >
+    Loved one's phone number
+  </label>
+
+  <input
+    type="tel"
+    id="family-recipient-phone"
+    placeholder="(555) 555-5555"
+    autocomplete="tel"
+    inputmode="tel"
+    maxlength="14"
     style="
       width:100%;
-      max-width:500px;
+      box-sizing:border-box;
+      padding:14px 16px;
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      font-size:18px;
+      margin-bottom:8px;
+    "
+  >
+
+  <div style="font-size:13px; color:#64748b; margin-bottom:18px;">
+    These 5 prepaid ScamCheck calls will be connected to this phone number.
+  </div>
+
+  <div id="family-card-container"></div>
+
+  <label style="display:block; margin:15px 0; font-size:14px; line-height:1.4;">
+    <input type="checkbox" id="family-terms-agreement">
+    I agree to the
+    <a href="/terms.html" target="_blank">Terms & Conditions</a>
+    and acknowledge the
+    <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+  </label>
+
+  <button
+    type="button"
+    id="family-pay-button"
+    style="
+      width:100%;
       padding:16px;
       border:none;
       border-radius:12px;
@@ -481,13 +546,17 @@
       color:white;
       font-size:18px;
       font-weight:700;
-      opacity:0.65;
-      cursor:not-allowed;
+      cursor:pointer;
     "
   >
-    Family Plan Purchase — Coming Soon
+    Pay $50 — Add 5 Calls
   </button>
 
+  <div
+    id="family-payment-status"
+    style="margin-top:15px; text-align:center;"
+  ></div>
+</div>
   <div style="font-size:13px; color:#64748b; margin-top:10px;">
     $50 for 5 prepaid ScamCheck consultations.
   </div>
@@ -590,6 +659,8 @@
 
 let squarePayments;
 let squareCard;
+   let familySquarePayments;
+let familySquareCard;
 let customerPhone = "";
 
 async function initializeSquare() {
@@ -1061,8 +1132,119 @@ if (!confirmed) {
     startCall(null);
   }
 }
+async function showFamilyPlanPurchase() {
+  const form = document.getElementById("family-plan-purchase-form");
+  const status = document.getElementById("family-payment-status");
 
-   
+  form.style.display = "block";
+
+  form.scrollIntoView({
+    behavior: "smooth"
+  });
+
+  if (familySquareCard) {
+    return;
+  }
+
+  try {
+    familySquarePayments = Square.payments(
+      "sq0idp-tT5PvqfYrzGeg3Y3q3Q8LQ",
+      "L6ZJ71WZNGBYN"
+    );
+
+    familySquareCard = await familySquarePayments.card();
+
+    await familySquareCard.attach("#family-card-container");
+
+  } catch (error) {
+    console.error("Family Plan card form error:", error);
+
+    status.textContent =
+      "The Family Plan payment form could not be loaded. Please try again.";
+  }
+}
+ document.getElementById("family-pay-button").onclick = async function () {
+  const button = document.getElementById("family-pay-button");
+  const status = document.getElementById("family-payment-status");
+  const phoneInput = document.getElementById("family-recipient-phone");
+  const termsAgreement = document.getElementById("family-terms-agreement");
+
+  const recipientPhone = phoneInput.value.replace(/\D/g, "");
+
+  if (recipientPhone.length !== 10) {
+    status.textContent =
+      "Please enter the loved one's complete 10-digit phone number.";
+    return;
+  }
+
+  if (!termsAgreement.checked) {
+    status.textContent =
+      "Please agree to the Terms & Conditions and acknowledge the Privacy Policy.";
+    return;
+  }
+
+  if (!familySquareCard) {
+    status.textContent =
+      "The payment form is not ready yet. Please try again.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Processing...";
+  status.textContent = "";
+
+  try {
+    const tokenResult = await familySquareCard.tokenize();
+
+    if (tokenResult.status !== "OK") {
+      throw new Error(
+        "Card information could not be verified."
+      );
+    }
+
+    const response = await fetch(
+      "/api/create-family-plan-payment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          sourceId: tokenResult.token,
+          recipientPhone: recipientPhone
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error ||
+        "The Family Plan purchase could not be completed."
+      );
+    }
+
+    status.innerHTML =
+      "<strong>✓ Family Plan purchased successfully.</strong><br>" +
+      "5 prepaid ScamCheck consultations are now connected to the loved one's phone number.";
+
+    button.textContent = "Family Plan Purchased";
+
+  } catch (error) {
+    console.error(
+      "Family Plan purchase error:",
+      error
+    );
+
+    status.textContent =
+      error.message ||
+      "The Family Plan purchase could not be completed.";
+
+    button.disabled = false;
+    button.textContent = "Pay $50 — Add 5 Calls";
+  }
+};  
  function sendSomething(event) {
   event.preventDefault();
 
