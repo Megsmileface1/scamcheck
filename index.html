@@ -324,25 +324,33 @@
 
     <div id="card-container"></div>
 
-    <label style="display:block; margin:15px 0; font-size:15px; line-height:1.4;">
+   <label style="display:block; margin:15px 0; font-size:15px; line-height:1.4;">
   <input type="checkbox" id="save-card-consent" required>
   Save my card securely with Square for future ScamCheck calls.
-</label><button id="pay-button"
-        style="
-            width:100%;
-            max-width:500px;
-            padding:16px;
-            border:none;
-            border-radius:12px;
-            background:#1976a8;
-            color:white;
-            font-size:18px;
-            font-weight:700;
-            cursor:pointer;
-            margin-top:15px;
-        ">
-        Pay $10 and Continue
-    </button>
+</label>
+
+<label style="display:block; margin:15px 0; font-size:14px; line-height:1.4;">
+  <input type="checkbox" id="terms-agreement" required>
+  I agree to the <a href="/terms.html" target="_blank">Terms & Conditions</a>
+  and acknowledge the <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+</label>
+
+<button id="pay-button"
+  style="
+    width:100%;
+    max-width:500px;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:#1976a8;
+    color:white;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:15px;
+  ">
+  Pay $10 and Continue
+</button>
 
     <div id="payment-status" style="margin-top:15px;"></div>
 </section>
