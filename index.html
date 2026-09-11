@@ -540,14 +540,20 @@ async function initializeSquare() {
 
     document.getElementById("pay-button").onclick = async function () {
 
-        const status = document.getElementById("payment-status");
-        const button = document.getElementById("pay-button");
-const saveCardConsent =
-    document.getElementById("save-card-consent");
+       const status = document.getElementById("payment-status");
+const button = document.getElementById("pay-button");
+const saveCardConsent = document.getElementById("save-card-consent");
+const termsAgreement = document.getElementById("terms-agreement");
 
 if (!saveCardConsent.checked) {
     status.textContent =
         "Please agree to save your card securely for future ScamCheck calls.";
+    return;
+}
+
+if (!termsAgreement.checked) {
+    status.textContent =
+        "Please agree to the Terms & Conditions and acknowledge the Privacy Policy.";
     return;
 }
         button.disabled = true;
