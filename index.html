@@ -946,7 +946,196 @@ if (!lookupResponse.ok || !lookupResult.success) {
     alert("ScamCheck could not check your account. Please try again.");
     return;
 }
+if (
+  lookupResult.found &&
+  Number(lookupResult.user.call_credits || 0) > 0
+) {
+  const prepaidTermsAccepted = confirm(
+    "You have prepaid ScamCheck consultations available. By continuing, you agree to the ScamCheck Terms & Conditions and acknowledge the Privacy Policy. Use 1 prepaid consultation now?"
+  );
 
+  if (!prepaidTermsAccepted) {
+    return;
+  }
+
+  try {
+    const prepaidCallResponse = await fetch(
+      "/api/start-prepaid-call",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          customerPhone: customerPhone,
+          consultationId:
+            localStorage.getItem(
+              "scamcheckCurrentConsultationId"
+            ) || null
+        })
+      }
+    );
+
+    const prepaidCallResult =
+      await prepaidCallResponse.json();
+
+    if (
+      !prepaidCallResponse.ok ||
+      !prepaidCallResult.success
+    ) {
+      alert(
+        prepaidCallResult.error ||
+        "The prepaid call could not be started. Please try again."
+      );
+      return;
+    }
+
+    localStorage.removeItem(
+      "scamcheckCurrentConsultationId"
+    );
+
+    const prepaidCallingSection =
+      document.getElementById("calling-section");
+
+    prepaidCallingSection.style.display = "block";
+
+    prepaidCallingSection.scrollIntoView({
+      behavior: "smooth"
+    });
+
+    const prepaidCallStatusInterval =
+      setInterval(async function () {
+        try {
+          const statusResponse = await fetch(
+            "/api/call-status",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                callSid: prepaidCallResult.callSid
+              })
+            }
+          );
+
+          const statusResult =
+            await statusResponse.json();
+
+          if (
+            statusResponse.ok &&
+            statusResult.success &&
+            statusResult.status === "completed"
+          ) {
+            clearInterval(
+              prepaidCallStatusInterval
+            );
+
+            prepaidCallingSection.style.display =
+              "none";
+
+            /*
+              Check the customer again after the call.
+              If one credit was used, the remaining
+              balance will now be lower.
+            */
+            const refreshedLookupResponse =
+              await fetch("/api/find-user", {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                  phone: customerPhone
+                })
+              });
+
+            const refreshedLookupResult =
+              await refreshedLookupResponse.json();
+
+            const remainingCredits =
+              refreshedLookupResponse.ok &&
+              refreshedLookupResult.success &&
+              refreshedLookupResult.found
+                ? Number(
+                    refreshedLookupResult.user
+                      .call_credits || 0
+                  )
+                : null;
+
+            const originalCredits =
+              Number(
+                lookupResult.user.call_credits || 0
+              );
+
+            const creditWasUsed =
+              remainingCredits !== null &&
+              remainingCredits <
+                originalCredits;
+
+            if (creditWasUsed) {
+              document.getElementById(
+                "receipt-section"
+              ).innerHTML = `
+                <h2>Call Completed</h2>
+                <p>Your ScamCheck consultation has ended.</p>
+                <p><strong>1 prepaid consultation was used.</strong></p>
+                <p>You have <strong>${remainingCredits}</strong> prepaid consultation${remainingCredits === 1 ? "" : "s"} remaining.</p>
+                <p>Thank you for using ScamCheck.</p>
+                <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+                  Start Another ScamCheck Call
+                </button>
+              `;
+            } else {
+              document.getElementById(
+                "receipt-section"
+              ).innerHTML = `
+                <h2>Call Ended</h2>
+                <p>A ScamCheck advisor was not available.</p>
+                <p><strong>Your prepaid consultation was not used.</strong></p>
+                <p>Please try again shortly.</p>
+                <button type="button" onclick="startAnotherCall()" style="margin-top:20px;">
+                  Try ScamCheck Again
+                </button>
+              `;
+            }
+
+            const receiptSection =
+              document.getElementById(
+                "receipt-section"
+              );
+
+            receiptSection.style.display =
+              "block";
+
+            receiptSection.scrollIntoView({
+              behavior: "smooth"
+            });
+          }
+        } catch (error) {
+          console.error(
+            "Prepaid call status check error:",
+            error
+          );
+        }
+      }, 3000);
+
+    return;
+
+  } catch (error) {
+    console.error(
+      "Prepaid customer error:",
+      error
+    );
+
+    alert(
+      "Something went wrong starting your prepaid call. Please try again."
+    );
+
+    return;
+  }
+}
 if (
     lookupResult.found &&
     lookupResult.user.square_customer_id &&
