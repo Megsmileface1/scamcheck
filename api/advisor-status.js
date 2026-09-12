@@ -39,7 +39,7 @@ export default async function handler(req, res) {
           error: consultationError
         } = await supabase
           .from("consultations")
-          .select("id, status")
+        .select("id, status, accepted_at")
           .eq("id", consultationId)
           .single();
 
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         } else {
           prepaidAccepted =
             consultation &&
-            consultation.status === "accepted";
+            Boolean(consultation.accepted_at);
         }
 
       } catch (error) {
