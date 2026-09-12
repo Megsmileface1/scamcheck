@@ -36,7 +36,7 @@ export default async function handler(req, res) {
           error: consultationError
         } = await supabase
           .from("consultations")
-          .select("id, customer_phone, status")
+          .select("id, customer_phone, status, accepted_at")
           .eq("id", consultationId)
           .single();
 
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
           If Twilio somehow sends the acceptance request twice,
           do not deduct a second credit.
         */
-        if (consultation.status === "accepted") {
+       if (consultation.accepted_at) {
           return res.status(200).send(`
             <Response>
             </Response>
