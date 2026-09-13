@@ -128,6 +128,31 @@
       background: #145f87;
     }
 
+    .analyze-button:disabled {
+      opacity: .7;
+      cursor: wait;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 22px;
+      padding: 20px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      white-space: pre-wrap;
+      line-height: 1.65;
+      font-size: 15px;
+      color: #16324f;
+    }
+
+    .result-box.error {
+      display: block;
+      background: #fff7f7;
+      border-color: #e2a8a8;
+      color: #8a2c2c;
+    }
+
     .privacy-box {
       margin-top: 22px;
       background: #f8fafc;
@@ -263,6 +288,8 @@
         🔍 Analyze for Scam Warning Signs
       </button>
 
+      <div id="result-box" class="result-box"></div>
+
       <div class="privacy-box">
         <strong>What will the automated check look for?</strong><br>
         Pressure or urgency, unusual payment requests, impersonation,
@@ -304,6 +331,61 @@
     </div>
 
   </div>
+
+  <script>
+    const analyzeButton = document.getElementById("analyze-button");
+    const scamText = document.getElementById("scam-text");
+    const resultBox = document.getElementById("result-box");
+
+    analyzeButton.addEventListener("click", async () => {
+      const text = scamText.value.trim();
+
+      if (!text) {
+        resultBox.className = "result-box error";
+        resultBox.textContent = "Please paste a suspicious message or other information before analyzing.";
+        return;
+      }
+
+      analyzeButton.disabled = true;
+      analyzeButton.textContent = "Analyzing...";
+
+      resultBox.className = "result-box";
+      resultBox.style.display = "block";
+      resultBox.textContent = "ScamCheck is analyzing the information you provided...";
+
+      try {
+        const response = await fetch("/api/analyze-scam", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            text: text
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.error || "The automated check is temporarily unavailable."
+          );
+        }
+
+        resultBox.className = "result-box";
+        resultBox.style.display = "block";
+        resultBox.textContent = data.analysis;
+
+      } catch (error) {
+        resultBox.className = "result-box error";
+        resultBox.textContent =
+          error.message || "The automated check is temporarily unavailable.";
+      } finally {
+        analyzeButton.disabled = false;
+        analyzeButton.textContent = "🔍 Analyze for Scam Warning Signs";
+      }
+    });
+  </script>
 
 </body>
 </html>
