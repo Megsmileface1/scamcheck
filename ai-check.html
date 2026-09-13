@@ -133,9 +133,41 @@
       cursor: wait;
     }
 
-    .result-box {
+    .risk-banner {
       display: none;
       margin-top: 22px;
+      padding: 18px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+
+    .risk-banner.high {
+      display: block;
+      background: #fff0f0;
+      border: 2px solid #c62828;
+      color: #a61b1b;
+    }
+
+    .risk-banner.caution {
+      display: block;
+      background: #fff8e1;
+      border: 2px solid #d49a00;
+      color: #875f00;
+    }
+
+    .risk-banner.lower {
+      display: block;
+      background: #edf8f0;
+      border: 2px solid #2e7d32;
+      color: #236527;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 12px;
       padding: 20px;
       background: #f8fafc;
       border: 1px solid #cbd5e1;
@@ -148,6 +180,7 @@
 
     .result-box.error {
       display: block;
+      margin-top: 22px;
       background: #fff7f7;
       border-color: #e2a8a8;
       color: #8a2c2c;
@@ -229,6 +262,10 @@
       h1 {
         font-size: 26px;
       }
+
+      .risk-banner {
+        font-size: 19px;
+      }
     }
   </style>
 </head>
@@ -288,6 +325,8 @@
         🔍 Analyze for Scam Warning Signs
       </button>
 
+      <div id="risk-banner" class="risk-banner"></div>
+
       <div id="result-box" class="result-box"></div>
 
       <div class="privacy-box">
@@ -336,13 +375,18 @@
     const analyzeButton = document.getElementById("analyze-button");
     const scamText = document.getElementById("scam-text");
     const resultBox = document.getElementById("result-box");
+    const riskBanner = document.getElementById("risk-banner");
 
     analyzeButton.addEventListener("click", async () => {
       const text = scamText.value.trim();
 
+      riskBanner.className = "risk-banner";
+      riskBanner.textContent = "";
+
       if (!text) {
         resultBox.className = "result-box error";
-        resultBox.textContent = "Please paste a suspicious message or other information before analyzing.";
+        resultBox.textContent =
+          "Please paste a suspicious message or other information before analyzing.";
         return;
       }
 
@@ -351,7 +395,8 @@
 
       resultBox.className = "result-box";
       resultBox.style.display = "block";
-      resultBox.textContent = "ScamCheck is analyzing the information you provided...";
+      resultBox.textContent =
+        "ScamCheck is analyzing the information you provided...";
 
       try {
         const response = await fetch("/api/analyze-scam", {
@@ -364,6 +409,12 @@
           })
         });
 
+        if (response.status === 429) {
+          throw new Error(
+            "Too many checks were submitted in a short period. Please wait about one minute and try again."
+          );
+        }
+
         const data = await response.json();
 
         if (!response.ok || !data.success) {
@@ -372,11 +423,40 @@
           );
         }
 
+        const analysis = data.analysis || "";
+
+        let riskType = "";
+        let riskLabel = "";
+
+        if (/RISK LEVEL:\s*HIGH RISK/i.test(analysis)) {
+          riskType = "high";
+          riskLabel = "⚠️ HIGH RISK";
+        } else if (/RISK LEVEL:\s*CAUTION/i.test(analysis)) {
+          riskType = "caution";
+          riskLabel = "⚠️ CAUTION";
+        } else if (/RISK LEVEL:\s*LOWER RISK/i.test(analysis)) {
+          riskType = "lower";
+          riskLabel = "✓ LOWER RISK";
+        }
+
+        let detailedAnalysis = analysis.replace(
+          /^RISK LEVEL:\s*(HIGH RISK|CAUTION|LOWER RISK)\s*/i,
+          ""
+        ).trim();
+
+        if (riskType) {
+          riskBanner.className = `risk-banner ${riskType}`;
+          riskBanner.textContent = riskLabel;
+        }
+
         resultBox.className = "result-box";
         resultBox.style.display = "block";
-        resultBox.textContent = data.analysis;
+        resultBox.textContent = detailedAnalysis || analysis;
 
       } catch (error) {
+        riskBanner.className = "risk-banner";
+        riskBanner.textContent = "";
+
         resultBox.className = "result-box error";
         resultBox.textContent =
           error.message || "The automated check is temporarily unavailable.";
