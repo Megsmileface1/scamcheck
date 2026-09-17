@@ -38,20 +38,31 @@ export default async function handler(req, res) {
       });
     }
 
-    const auth = Buffer.from(
-      `${authId}:${authToken}`
-    ).toString("base64");
+    /*
+      Every consultation gets its own private conference room.
+      We use the existing consultation ID when available.
+    */
+    const roomId =
+      consultationId ||
+      `scamcheck-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 10)}`;
 
     const params = new URLSearchParams({
       paymentId: paymentId || "",
-      consultationId: consultationId || ""
+      consultationId: consultationId || "",
+      roomId
     });
 
     const answerUrl =
       `https://askscamcheck.com/api/plivo-customer-answer?${params.toString()}`;
 
     const hangupUrl =
-      "https://askscamcheck.com/api/plivo-call-completed";
+      `https://askscamcheck.com/api/plivo-call-completed?${params.toString()}`;
+
+    const auth = Buffer.from(
+      `${authId}:${authToken}`
+    ).toString("base64");
 
     const response = await fetch(
       `https://api.plivo.com/v1/Account/${authId}/Call/`,
@@ -84,7 +95,11 @@ export default async function handler(req, res) {
       });
     }
 
-   const callUuid = data.request_uuid || null;
+    /*
+      Plivo returns a request UUID when the outbound call is created.
+      The actual CallUUID arrives later at the answer/hangup webhook.
+    */
+    const requestUuid = data.request_uuid || null;
 
     try {
       let consultationError = null;
@@ -99,7 +114,6 @@ export default async function handler(req, res) {
           .update({
             customer_phone: customerPhone || null,
             payment_id: paymentId || null,
-            call_sid: callUuid || null,
             status: "calling"
           })
           .eq("id", consultationId)
@@ -121,7 +135,6 @@ export default async function handler(req, res) {
             {
               customer_phone: customerPhone || null,
               payment_id: paymentId || null,
-              call_sid: callUuid || null,
               status: "calling"
             }
           ]);
@@ -145,7 +158,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      callSid: callUuid
+      callSid: requestUuid
     });
 
   } catch (error) {
