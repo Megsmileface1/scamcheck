@@ -43,6 +43,8 @@ export default async function handler(req, res) {
         timeout="20"
         action="${actionUrl}"
         method="POST"
+        callbackUrl="${actionUrl}"
+        callbackMethod="POST"
         confirmSound="${confirmUrl}"
         confirmKey="1"
         confirmTimeout="5"
