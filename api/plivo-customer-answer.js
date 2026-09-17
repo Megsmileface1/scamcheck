@@ -1,18 +1,31 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY
+);
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).send("Method not allowed");
   }
 
-  const paymentId = req.query.paymentId || "";
-  const consultationId = req.query.consultationId || "";
+  const consultationId =
+    req.query.consultationId || "";
 
-  const plivoNumber = process.env.PLIVO_PHONE_NUMBER;
-  const advisorPhone = process.env.SCAMCHECK_ADVISOR_PHONE;
+  const roomId =
+    req.query.roomId || "";
 
-  if (!plivoNumber || !advisorPhone) {
-    console.error("Missing Plivo number or advisor phone");
+  const callUuid =
+    req.body.CallUUID || "";
 
-    res.setHeader("Content-Type", "application/xml");
+  if (!roomId) {
+    console.error("Missing Plivo conference room ID");
+
+    res.setHeader(
+      "Content-Type",
+      "application/xml"
+    );
 
     return res.status(200).send(`
       <Response>
@@ -24,13 +37,37 @@ export default async function handler(req, res) {
     `);
   }
 
-  const actionUrl =
-    `https://askscamcheck.com/api/plivo-advisor-status?paymentId=${encodeURIComponent(paymentId)}&consultationId=${encodeURIComponent(consultationId)}`;
+  /*
+    Store the real Plivo CallUUID when the
+    customer actually answers the call.
+  */
+  if (consultationId && callUuid) {
+    try {
+      const { error } = await supabase
+        .from("consultations")
+        .update({
+          call_sid: callUuid
+        })
+        .eq("id", consultationId);
 
-  const confirmUrl =
-    `https://askscamcheck.com/api/plivo-advisor-confirm?paymentId=${encodeURIComponent(paymentId)}&consultationId=${encodeURIComponent(consultationId)}`;
+      if (error) {
+        console.error(
+          "Could not store Plivo CallUUID:",
+          error
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Plivo CallUUID logging error:",
+        error
+      );
+    }
+  }
 
-  res.setHeader("Content-Type", "application/xml");
+  res.setHeader(
+    "Content-Type",
+    "application/xml"
+  );
 
   return res.status(200).send(`
     <Response>
@@ -38,19 +75,11 @@ export default async function handler(req, res) {
         Please hold while ScamCheck connects you to an advisor.
       </Speak>
 
-      <Dial
-        callerId="${plivoNumber}"
-        timeout="20"
-        action="${actionUrl}"
-        method="POST"
-        callbackUrl="${actionUrl}"
-        callbackMethod="POST"
-        confirmSound="${confirmUrl}"
-        confirmKey="1"
-        confirmTimeout="5"
-      >
-        <Number>${advisorPhone}</Number>
-      </Dial>
+      <Conference
+        startConferenceOnEnter="false"
+        endConferenceOnExit="false"
+        waitSound=""
+      >${roomId}</Conference>
     </Response>
   `);
 }
