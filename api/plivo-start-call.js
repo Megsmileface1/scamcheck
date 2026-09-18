@@ -92,6 +92,16 @@ export default async function handler(req, res) {
       its existing consultation ID as its
       unique private conference room.
     */
+    const phoneDigits =
+  String(customerPhone).replace(/\D/g, "");
+
+const plivoCustomerPhone =
+  phoneDigits.length === 10
+    ? `+1${phoneDigits}`
+    : phoneDigits.length === 11 &&
+      phoneDigits.startsWith("1")
+      ? `+${phoneDigits}`
+      : customerPhone;
     const roomId =
       `scamcheck-${consultationId}`;
 
@@ -123,7 +133,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: plivoNumber,
-          to: customerPhone,
+          to: to: plivoCustomerPhone,
           answer_url: answerUrl,
           answer_method: "POST",
           hangup_url: hangupUrl,
