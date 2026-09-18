@@ -807,7 +807,7 @@ if (!cancelResponse.ok) {
 
 button.textContent = "Payment Authorized";
 
-const callResponse = await fetch("/api/start-call", {
+const callResponse = await fetch("/api/plivo-start-call", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
