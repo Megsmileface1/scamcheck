@@ -148,7 +148,7 @@ export default async function handler(req, res) {
       <Conference
         startConferenceOnEnter="false"
         endConferenceOnExit="false"
-        waitSound=""
+      
       >${roomId}</Conference>
     </Response>
   `);
