@@ -78,7 +78,7 @@ const plivoAdvisorPhone =
         },
         body: JSON.stringify({
           from: plivoNumber,
-          to: to: plivoAdvisorPhone,
+         to: plivoAdvisorPhone,
           answer_url: answerUrl,
           answer_method: "POST",
           hangup_url: hangupUrl,
