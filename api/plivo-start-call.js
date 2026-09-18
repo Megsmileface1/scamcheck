@@ -21,16 +21,35 @@ export default async function handler(req, res) {
 
     if (!customerPhone) {
       return res.status(400).json({
+        success: false,
         error: "Missing customer phone number"
       });
     }
 
-    const authId = process.env.PLIVO_AUTH_ID;
-    const authToken = process.env.PLIVO_AUTH_TOKEN;
-    const plivoNumber = process.env.PLIVO_PHONE_NUMBER;
+    if (!paymentId || !consultationId) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing payment or consultation"
+      });
+    }
 
-    if (!authId || !authToken || !plivoNumber) {
-      console.error("Missing Plivo environment variables");
+    const authId =
+      process.env.PLIVO_AUTH_ID;
+
+    const authToken =
+      process.env.PLIVO_AUTH_TOKEN;
+
+    const plivoNumber =
+      process.env.PLIVO_PHONE_NUMBER;
+
+    if (
+      !authId ||
+      !authToken ||
+      !plivoNumber
+    ) {
+      console.error(
+        "Missing Plivo environment variables"
+      );
 
       return res.status(500).json({
         success: false,
@@ -39,19 +58,49 @@ export default async function handler(req, res) {
     }
 
     /*
-      Every consultation gets its own private conference room.
-      We use the existing consultation ID when available.
+      Verify that the existing consultation
+      belongs to this customer and payment.
+    */
+    const {
+      data: consultation,
+      error: consultationError
+    } = await supabase
+      .from("consultations")
+      .select("id")
+      .eq("id", consultationId)
+      .eq("customer_phone", customerPhone)
+      .eq("payment_id", paymentId)
+      .single();
+
+    if (
+      consultationError ||
+      !consultation
+    ) {
+      console.error(
+        "Could not verify consultation:",
+        consultationError
+      );
+
+      return res.status(400).json({
+        success: false,
+        error: "Could not verify consultation"
+      });
+    }
+
+    /*
+      Every normal paid consultation uses
+      its existing consultation ID as its
+      unique private conference room.
     */
     const roomId =
-      consultationId ||
-      `scamcheck-${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2, 10)}`;
+      `scamcheck-${consultationId}`;
 
     const params = new URLSearchParams({
-      paymentId: paymentId || "",
-      consultationId: consultationId || "",
-      roomId
+      paymentId,
+      consultationId:
+        String(consultationId),
+      roomId,
+      prepaid: "0"
     });
 
     const answerUrl =
@@ -86,7 +135,10 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Plivo error:", data);
+      console.error(
+        "Plivo error:",
+        data
+      );
 
       return res.status(response.status).json({
         success: false,
@@ -96,73 +148,39 @@ export default async function handler(req, res) {
     }
 
     /*
-      Plivo returns a request UUID when the outbound call is created.
-      The actual CallUUID arrives later at the answer/hangup webhook.
+      Plivo returns a request UUID here.
+      The actual CallUUID is stored when
+      the customer answers.
     */
-    const requestUuid = data.request_uuid || null;
+    const requestUuid =
+      data.request_uuid || null;
 
-    try {
-      let consultationError = null;
-      let consultationUpdated = false;
+    const { error: updateError } =
+      await supabase
+        .from("consultations")
+        .update({
+          status: "calling"
+        })
+        .eq("id", consultationId);
 
-      if (consultationId) {
-        const {
-          data: updatedConsultations,
-          error: updateError
-        } = await supabase
-          .from("consultations")
-          .update({
-            customer_phone: customerPhone || null,
-            payment_id: paymentId || null,
-            status: "calling"
-          })
-          .eq("id", consultationId)
-          .eq("customer_phone", customerPhone)
-          .select("id");
-
-        consultationError = updateError;
-
-        consultationUpdated =
-          !updateError &&
-          updatedConsultations &&
-          updatedConsultations.length > 0;
-      }
-
-      if (!consultationUpdated && !consultationError) {
-        const { error: insertError } = await supabase
-          .from("consultations")
-          .insert([
-            {
-              customer_phone: customerPhone || null,
-              payment_id: paymentId || null,
-              status: "calling"
-            }
-          ]);
-
-        consultationError = insertError;
-      }
-
-      if (consultationError) {
-        console.error(
-          "Could not create or update call consultation record:",
-          consultationError
-        );
-      }
-
-    } catch (consultationError) {
+    if (updateError) {
       console.error(
-        "Call consultation logging error:",
-        consultationError
+        "Could not mark consultation calling:",
+        updateError
       );
     }
 
     return res.status(200).json({
       success: true,
-      callSid: requestUuid
+      callSid: requestUuid,
+      consultationId
     });
 
   } catch (error) {
-    console.error("Plivo call error:", error);
+    console.error(
+      "Plivo call error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
