@@ -25,7 +25,16 @@ export default async function handler(req, res) {
     const plivoNumber = process.env.PLIVO_PHONE_NUMBER;
     const advisorPhone =
       process.env.SCAMCHECK_ADVISOR_PHONE;
+const advisorDigits =
+  String(advisorPhone).replace(/\D/g, "");
 
+const plivoAdvisorPhone =
+  advisorDigits.length === 10
+    ? `+1${advisorDigits}`
+    : advisorDigits.length === 11 &&
+      advisorDigits.startsWith("1")
+      ? `+${advisorDigits}`
+      : advisorPhone;
     if (
       !authId ||
       !authToken ||
@@ -69,7 +78,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: plivoNumber,
-          to: advisorPhone,
+          to: to: plivoAdvisorPhone,
           answer_url: answerUrl,
           answer_method: "POST",
           hangup_url: hangupUrl,
