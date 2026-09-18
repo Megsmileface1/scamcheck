@@ -22,23 +22,31 @@ export default async function handler(req, res) {
     req.query.prepaid === "1";
 
   try {
+    let consultation = null;
+
     /*
-      If the consultation was already accepted,
-      the advisor hangup is normal and we must
-      not cancel payment or change it to failed.
+      Check whether the consultation was accepted
+      and get the customer's Plivo CallUUID.
     */
     if (consultationId) {
       const {
-        data: consultation,
+        data,
         error: consultationError
       } = await supabase
         .from("consultations")
-        .select("id, accepted_at")
+        .select("id, accepted_at, call_sid")
         .eq("id", consultationId)
         .single();
 
+      if (!consultationError) {
+        consultation = data;
+      }
+
+      /*
+        If the consultation was already accepted,
+        the advisor hangup is normal.
+      */
       if (
-        !consultationError &&
         consultation &&
         consultation.accepted_at
       ) {
@@ -50,8 +58,52 @@ export default async function handler(req, res) {
     }
 
     /*
-      Advisor never accepted the consultation.
+      Advisor never accepted.
 
+      End the customer's waiting Plivo call so
+      the customer is not left in the conference.
+    */
+    if (
+      consultation &&
+      consultation.call_sid
+    ) {
+      try {
+        const authId =
+          process.env.PLIVO_AUTH_ID;
+
+        const authToken =
+          process.env.PLIVO_AUTH_TOKEN;
+
+        if (authId && authToken) {
+          const auth = Buffer.from(
+            `${authId}:${authToken}`
+          ).toString("base64");
+
+          const hangupResponse = await fetch(
+            `https://api.plivo.com/v1/Account/${authId}/Call/${consultation.call_sid}/`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Basic ${auth}`
+              }
+            }
+          );
+
+          if (!hangupResponse.ok) {
+            console.error(
+              "Could not end waiting customer Plivo call"
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Customer Plivo hangup failed:",
+          error
+        );
+      }
+    }
+
+    /*
       Normal calls cancel the Square authorization.
       Prepaid calls have not used a credit.
     */
