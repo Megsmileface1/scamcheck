@@ -133,7 +133,7 @@ const plivoCustomerPhone =
         },
         body: JSON.stringify({
           from: plivoNumber,
-          to: to: plivoCustomerPhone,
+         to: plivoCustomerPhone,
           answer_url: answerUrl,
           answer_method: "POST",
           hangup_url: hangupUrl,
