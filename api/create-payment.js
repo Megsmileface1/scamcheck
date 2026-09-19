@@ -47,7 +47,7 @@ if (phone && !phone.startsWith("+")) {
           idempotency_key: idempotencyKey,
 
           amount_money: {
-            amount: 1000,
+            amount: 100,
             currency: "USD"
           },
 
