@@ -12,10 +12,12 @@ export default async function handler(req, res) {
 
   try {
     const {
-      customerPhone,
-      customerMessage,
-      supportingImageUrl
-    } = req.body;
+  customerPhone,
+  customerMessage,
+  supportingImageUrl,
+  paymentId,
+  consultationId
+} = req.body;
 
     const { data, error } = await supabase
       .from("consultations")
