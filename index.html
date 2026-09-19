@@ -1211,7 +1211,7 @@ if (!returningTermsAccepted) {
 const paymentId = chargeResult.payment.id;
 alert("Payment authorized. Connecting your ScamCheck call now...");
 
-  const callResponse = await fetch("/api/start-call", {
+const callResponse = await fetch("/api/plivo-start-call", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
