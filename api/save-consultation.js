@@ -25,7 +25,8 @@ export default async function handler(req, res) {
         {
           customer_phone: customerPhone || null,
           customer_message: customerMessage || null,
-          supporting_image_url: supportingImageUrl || null
+          supporting_image_url: supportingImageUrl || null,
+payment_id: paymentId || null
         }
       ])
       .select()
