@@ -730,12 +730,6 @@ const button = document.getElementById("pay-button");
 const saveCardConsent = document.getElementById("save-card-consent");
 const termsAgreement = document.getElementById("terms-agreement");
 
-if (!saveCardConsent.checked) {
-    status.textContent =
-        "Please agree to save your card securely for future ScamCheck calls.";
-    return;
-}
-
 if (!termsAgreement.checked) {
     status.textContent =
         "Please agree to the Terms & Conditions and acknowledge the Privacy Policy.";
@@ -759,7 +753,7 @@ if (!termsAgreement.checked) {
                 },
                 body: JSON.stringify({
                     sourceId: tokenResult.token,
-                    phone: customerPhone
+                    phone: saveCardConsent.checked ? customerPhone : null
                 })
             });
 
