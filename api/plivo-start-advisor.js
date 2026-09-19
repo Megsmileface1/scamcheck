@@ -82,8 +82,8 @@ const plivoAdvisorPhone =
           answer_url: answerUrl,
           answer_method: "POST",
           hangup_url: hangupUrl,
-          hangup_method: "POST",
-          hangup_on_ring: 20
+          hangup_method: "POST"
+         
         })
       }
     );
