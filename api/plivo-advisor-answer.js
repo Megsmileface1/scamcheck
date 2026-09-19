@@ -49,7 +49,7 @@ export default async function handler(req, res) {
   return res.status(200).send(`
     <Response>
       <GetDigits
-        action="${actionUrl}"
+        action="${actionUrl.replace(/&/g, "&amp;")}"
         method="POST"
         numDigits="1"
         timeout="10"
