@@ -745,7 +745,32 @@ if (!termsAgreement.checked) {
             if (tokenResult.status !== "OK") {
                 throw new Error("Card information could not be verified.");
             }
+// Create a consultation before authorizing payment.
+const consultationResponse = await fetch("/api/save-consultation", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        customerPhone: customerPhone,
+        customerMessage: null,
+        supportingImageUrl: null
+    })
+});
 
+const consultationResult = await consultationResponse.json();
+
+if (
+    !consultationResponse.ok ||
+    !consultationResult.success ||
+    !consultationResult.consultation?.id
+) {
+    throw new Error(
+        "Your consultation could not be prepared. No payment was authorized. Please try again."
+    );
+}
+
+const consultationId = consultationResult.consultation.id;
             const response = await fetch("/api/create-payment", {
                 method: "POST",
                 headers: {
@@ -800,7 +825,37 @@ if (!cancelResponse.ok) {
     "Connecting your ScamCheck call now...";
 
 button.textContent = "Payment Authorized";
+const linkResponse = await fetch("/api/save-consultation", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        customerPhone: customerPhone,
+        consultationId: consultationId,
+        paymentId: paymentId
+    })
+});
 
+const linkResult = await linkResponse.json();
+
+if (!linkResponse.ok || !linkResult.success) {
+    const cancelResponse = await fetch("/api/cancel-payment", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ paymentId: paymentId })
+    });
+
+    if (!cancelResponse.ok) {
+        console.error("Payment cancellation failed after consultation linking failed");
+    }
+
+    throw new Error(
+        "Your call could not be prepared. Please contact ScamCheck if you see a pending charge."
+    );
+}
 const callResponse = await fetch("/api/plivo-start-call", {
     method: "POST",
     headers: {
@@ -809,7 +864,7 @@ const callResponse = await fetch("/api/plivo-start-call", {
 body: JSON.stringify({
   customerPhone: customerPhone,
   paymentId: paymentId,
-  consultationId: localStorage.getItem("scamcheckCurrentConsultationId") || null
+  consultationId: consultationId
 })
 });
 
