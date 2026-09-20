@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     }
 
     const squareResponse = await fetch(
-      https://connect.squareup.com/v2/payments/${paymentId}/complete
+           `https://connect.squareup.com/v2/payments/${encodeURIComponent(paymentId)}/complete`,
       {
         method: "POST",
         headers: {
