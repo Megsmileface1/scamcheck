@@ -896,7 +896,7 @@ callingSection.scrollIntoView({ behavior: "smooth" });
 let callSeconds = 0;
 const callTimer = document.getElementById("call-timer");
 
-setInterval(function () {
+const callTimerInterval = setInterval(function () {
     callSeconds++;
 
     const minutes = Math.floor(callSeconds / 60);
@@ -927,7 +927,7 @@ const callStatusInterval = setInterval(async function () {
       statusResult.status === "completed"
     ) {
       clearInterval(callStatusInterval);
-
+clearInterval(callTimerInterval);
       callingSection.style.display = "none";
 const paymentStatusResponse = await fetch(
   `/api/payment-status?paymentId=${encodeURIComponent(paymentId)}`
