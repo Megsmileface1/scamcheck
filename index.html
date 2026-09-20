@@ -915,7 +915,8 @@ const callStatusInterval = setInterval(async function () {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        callSid: callResult.callSid
+       consultationId: callResult.consultationId,
+paymentId: paymentId
       })
     });
 
